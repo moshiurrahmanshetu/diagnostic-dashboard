@@ -1,0 +1,1066 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MediScan - Patients Management</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- AOS CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+    <!-- Custom Style -->
+    <link href="/css/style.css" rel="stylesheet" />
+    <style>
+      /* Page-specific overrides & custom table button alignments */
+      .action-btn-group {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .action-icon-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--border-color);
+        background-color: var(--bg-card);
+        color: var(--text-muted);
+        transition: all 0.2s ease;
+        cursor: pointer;
+      }
+      .action-icon-btn:hover {
+        transform: translateY(-2px);
+      }
+      .action-icon-btn.btn-view:hover {
+        background-color: rgba(13, 110, 253, 0.1);
+        color: #0d6efd;
+        border-color: rgba(13, 110, 253, 0.3);
+      }
+      .action-icon-btn.btn-edit:hover {
+        background-color: rgba(25, 135, 84, 0.1);
+        color: #198754;
+        border-color: rgba(25, 135, 84, 0.3);
+      }
+      .action-icon-btn.btn-delete:hover {
+        background-color: rgba(220, 53, 69, 0.1);
+        color: #dc3545;
+        border-color: rgba(220, 53, 69, 0.3);
+      }
+      /* Soft active / inactive badges */
+      .badge-active {
+        background-color: rgba(25, 135, 84, 0.15) !important;
+        color: #198754 !important;
+        border: 1px solid rgba(25, 135, 84, 0.2) !important;
+      }
+      .badge-inactive {
+        background-color: rgba(108, 117, 125, 0.15) !important;
+        color: #6c757d !important;
+        border: 1px solid rgba(108, 117, 125, 0.2) !important;
+      }
+      .custom-toast {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        z-index: 1060;
+        background-color: var(--bg-card);
+        border: 1px solid var(--border-color);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        border-radius: 12px;
+        min-width: 300px;
+        display: none;
+        animation: slideUp 0.3s ease-out;
+      }
+      @keyframes slideUp {
+        from { transform: translateY(100px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+      }
+    </style>
+  </head>
+  <body>
+
+    <!-- Sidebar Layout -->
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon">
+          <i class="bi bi-activity"></i>
+        </div>
+        <span class="brand-name">MediScan</span>
+      </div>
+
+      <nav class="sidebar-menu">
+        <ul class="sidebar-menu-list">
+          <li class="sidebar-item">
+            <a href="index.html" class="sidebar-link">
+              <i class="bi bi-grid-1x2-fill"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="sidebar-item">
+            <a href="patients.html" class="sidebar-link active">
+              <i class="bi bi-people-fill"></i>
+              <span>Patients</span>
+            </a>
+          </li>
+          <li class="sidebar-item">
+            <a href="doctors.html" class="sidebar-link">
+              <i class="bi bi-heart-pulse"></i>
+              <span>Doctors</span>
+            </a>
+          </li>
+          <li class="sidebar-item">
+            <a href="appointments.html" class="sidebar-link">
+              <i class="bi bi-calendar-event"></i>
+              <span>Appointments</span>
+            </a>
+          </li>
+          <li class="sidebar-item">
+            <a href="reports.html" class="sidebar-link">
+              <i class="bi bi-journal-text"></i>
+              <span>Lab Reports</span>
+            </a>
+          </li>
+          <li class="sidebar-item">
+            <a href="lab-tests.html" class="sidebar-link">
+              <i class="bi bi-clipboard2-pulse"></i>
+              <span>Lab Tests</span>
+            </a>
+          </li>
+          <li class="sidebar-item">
+            <a href="billing.html" class="sidebar-link">
+              <i class="bi bi-credit-card"></i>
+              <span>Billing</span>
+            </a>
+          </li>
+          <li class="sidebar-item">
+            <a href="settings.html" class="sidebar-link">
+              <i class="bi bi-gear"></i>
+              <span>Settings</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-badge">
+          <div class="user-badge-avatar">SJ</div>
+          <div class="user-badge-info">
+            <span class="user-badge-name">Sarah Jenkins</span>
+            <span class="user-badge-role">MD, Pathologist</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Top Navbar -->
+      <header class="top-navbar">
+        <div class="navbar-left">
+          <button id="sidebar-toggle" class="sidebar-toggle-btn">
+            <i class="bi bi-list"></i>
+          </button>
+          <div class="search-wrapper">
+            <i class="bi bi-search"></i>
+            <input type="text" id="search-patient" class="search-input" placeholder="Search patients by name or phone..." />
+          </div>
+        </div>
+
+        <div class="navbar-actions">
+          <!-- Day/Night Toggle Switch -->
+          <div class="theme-switch-container">
+            <button id="btn-theme-light" class="theme-switch-btn active">
+              <i class="bi bi-sun-fill"></i> Day
+            </button>
+            <button id="btn-theme-dark" class="theme-switch-btn">
+              <i class="bi bi-moon-fill"></i> Night
+            </button>
+          </div>
+
+          <!-- Notification Dropdown -->
+          <div class="dropdown">
+            <button class="navbar-action-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="bi bi-bell"></i>
+              <span class="badge-dot"></span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-custom p-2 mt-2" style="width: 280px;">
+              <li class="px-3 py-2 border-bottom var(--border-color) d-flex justify-content-between align-items-center">
+                <span class="fw-bold text-primary">Notifications</span>
+                <span class="badge bg-danger rounded-pill">3 New</span>
+              </li>
+              <li><a class="dropdown-item dropdown-item-custom py-2" href="reports.html">
+                <div class="d-flex flex-column">
+                  <span class="fw-semibold">Abnormal Blood Test #4829</span>
+                  <span class="text-xs text-muted">2 mins ago</span>
+                </div>
+              </a></li>
+              <li><a class="dropdown-item dropdown-item-custom py-2" href="appointments.html">
+                <div class="d-flex flex-column">
+                  <span class="fw-semibold">New Appointment: Arjun Mahat</span>
+                  <span class="text-xs text-muted">1 hour ago</span>
+                </div>
+              </a></li>
+              <li><a class="dropdown-item dropdown-item-custom py-2" href="settings.html">
+                <div class="d-flex flex-column">
+                  <span class="fw-semibold">Sysmex Calibration Finished</span>
+                  <span class="text-xs text-muted">Yesterday</span>
+                </div>
+              </a></li>
+            </ul>
+          </div>
+
+          <!-- User Profile Dropdown -->
+          <div class="dropdown">
+            <button class="profile-dropdown-trigger" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <div class="profile-avatar">SJ</div>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-custom p-2 mt-2">
+              <li class="px-3 py-2">
+                <p class="mb-0 fw-bold">Dr. Sarah Jenkins</p>
+                <p class="mb-0 text-muted small">sjenkins@mediscan.com</p>
+              </li>
+              <li class="dropdown-divider-custom"></li>
+              <li><a class="dropdown-item dropdown-item-custom" href="settings.html"><i class="bi bi-person me-2"></i>My Profile</a></li>
+              <li><a class="dropdown-item dropdown-item-custom" href="settings.html"><i class="bi bi-gear me-2"></i>Account Settings</a></li>
+              <li class="dropdown-divider-custom"></li>
+              <li><a class="dropdown-item dropdown-item-custom text-danger" href="login.html"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+
+      <!-- Page Content -->
+      <div class="page-container">
+        <!-- Breadcrumbs & Heading -->
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3 mb-4" data-aos="fade-down">
+          <div>
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb mb-1 text-xs">
+                <li class="breadcrumb-item"><a href="index.html" class="text-decoration-none text-muted">Dashboard</a></li>
+                <li class="breadcrumb-item active text-primary" aria-current="page">Patients</li>
+              </ol>
+            </nav>
+            <h1 class="h3 fw-bold mb-1">Patients</h1>
+            <p class="text-muted mb-0 text-sm">Manage diagnostic clinic patient profiles, contact logs, and history.</p>
+          </div>
+          <button class="btn btn-accent d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#addPatientModal">
+            <i class="bi bi-person-plus-fill"></i> Add Patient
+          </button>
+        </div>
+
+        <!-- Filter & Search Panel -->
+        <div class="card-custom mb-4 p-3" data-aos="fade-up">
+          <div class="row g-3">
+            <div class="col-12 col-md-4">
+              <label class="form-label form-label-custom mb-1 text-xs">Search Name / Phone</label>
+              <div class="input-group">
+                <span class="input-group-text bg-transparent border-end-0 var(--border-color)"><i class="bi bi-search text-muted"></i></span>
+                <input type="text" id="filter-search" class="form-control form-control-custom border-start-0" placeholder="Search name or phone..." />
+              </div>
+            </div>
+            <div class="col-12 col-sm-6 col-md-3">
+              <label class="form-label form-label-custom mb-1 text-xs">Gender</label>
+              <select class="form-select form-select-custom" id="filter-gender">
+                <option value="All">All Genders</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="col-12 col-sm-6 col-md-3">
+              <label class="form-label form-label-custom mb-1 text-xs">Status</label>
+              <select class="form-select form-select-custom" id="filter-status">
+                <option value="All">All Statuses</option>
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+              </select>
+            </div>
+            <div class="col-12 col-md-2">
+              <label class="form-label form-label-custom mb-1 text-xs">Last Visit Date</label>
+              <input type="date" class="form-control form-control-custom" id="filter-date" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Patient Directory Table Area -->
+        <div class="row">
+          <div class="col-12" data-aos="fade-up" data-aos-delay="50">
+            <div class="card-custom p-0">
+              <div class="px-4 py-3 border-bottom var(--border-color) d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold text-primary text-sm">Patient Directory</h5>
+                <span class="text-muted text-xs">Showing <strong class="text-primary" id="patient-count-badge">4</strong> patients</span>
+              </div>
+              <div class="table-responsive">
+                <table class="table table-custom align-middle mb-0" id="patients-table">
+                  <thead>
+                    <tr>
+                      <th style="width: 120px;">Patient ID</th>
+                      <th>Name</th>
+                      <th>Age</th>
+                      <th>Gender</th>
+                      <th>Phone</th>
+                      <th>Last Visit</th>
+                      <th>Status</th>
+                      <th style="width: 140px; text-align: right;">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="patients-table-body">
+                    <!-- Sample Patient Row 1 -->
+                    <tr data-patient-id="PT-48291" data-gender="Male" data-status="Active" data-date="2026-07-08">
+                      <td><span class="fw-bold font-monospace">PT-48291</span></td>
+                      <td>
+                        <div class="d-flex align-items-center gap-3">
+                          <div class="user-badge-avatar bg-primary-subtle text-primary fw-bold">AM</div>
+                          <div>
+                            <span class="fw-semibold d-block text-primary patient-row-name">Arjun Mahat</span>
+                            <span class="text-muted text-xs font-sans">amahat@email.com</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td>38</td>
+                      <td>Male</td>
+                      <td>+1 (555) 234-5678</td>
+                      <td>08-Jul-2026</td>
+                      <td><span class="badge badge-active rounded-pill px-3 py-1 text-xs">Active</span></td>
+                      <td>
+                        <div class="action-btn-group justify-content-end">
+                          <button class="action-icon-btn btn-view" data-bs-toggle="tooltip" data-bs-placement="top" title="View Profile" onclick="viewPatient('PT-48291')">
+                            <i class="bi bi-eye"></i>
+                          </button>
+                          <button class="action-icon-btn btn-edit" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Patient" onclick="editPatient('PT-48291')">
+                            <i class="bi bi-pencil"></i>
+                          </button>
+                          <button class="action-icon-btn btn-delete" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete Patient" onclick="deletePatient('PT-48291')">
+                            <i class="bi bi-trash"></i>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    <!-- Sample Patient Row 2 -->
+                    <tr data-patient-id="PT-48292" data-gender="Female" data-status="Active" data-date="2026-07-06">
+                      <td><span class="fw-bold font-monospace">PT-48292</span></td>
+                      <td>
+                        <div class="d-flex align-items-center gap-3">
+                          <div class="user-badge-avatar bg-success-subtle text-success fw-bold">LB</div>
+                          <div>
+                            <span class="fw-semibold d-block text-primary patient-row-name">Linda Blair</span>
+                            <span class="text-muted text-xs font-sans">lblair@email.com</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td>50</td>
+                      <td>Female</td>
+                      <td>+1 (555) 987-6543</td>
+                      <td>06-Jul-2026</td>
+                      <td><span class="badge badge-active rounded-pill px-3 py-1 text-xs">Active</span></td>
+                      <td>
+                        <div class="action-btn-group justify-content-end">
+                          <button class="action-icon-btn btn-view" data-bs-toggle="tooltip" data-bs-placement="top" title="View Profile" onclick="viewPatient('PT-48292')">
+                            <i class="bi bi-eye"></i>
+                          </button>
+                          <button class="action-icon-btn btn-edit" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Patient" onclick="editPatient('PT-48292')">
+                            <i class="bi bi-pencil"></i>
+                          </button>
+                          <button class="action-icon-btn btn-delete" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete Patient" onclick="deletePatient('PT-48292')">
+                            <i class="bi bi-trash"></i>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    <!-- Sample Patient Row 3 -->
+                    <tr data-patient-id="PT-48293" data-gender="Male" data-status="Active" data-date="2026-07-01">
+                      <td><span class="fw-bold font-monospace">PT-48293</span></td>
+                      <td>
+                        <div class="d-flex align-items-center gap-3">
+                          <div class="user-badge-avatar bg-warning-subtle text-warning fw-bold">RK</div>
+                          <div>
+                            <span class="fw-semibold d-block text-primary patient-row-name">Robert K.</span>
+                            <span class="text-muted text-xs font-sans">robert.k@email.com</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td>33</td>
+                      <td>Male</td>
+                      <td>+1 (555) 345-6789</td>
+                      <td>01-Jul-2026</td>
+                      <td><span class="badge badge-active rounded-pill px-3 py-1 text-xs">Active</span></td>
+                      <td>
+                        <div class="action-btn-group justify-content-end">
+                          <button class="action-icon-btn btn-view" data-bs-toggle="tooltip" data-bs-placement="top" title="View Profile" onclick="viewPatient('PT-48293')">
+                            <i class="bi bi-eye"></i>
+                          </button>
+                          <button class="action-icon-btn btn-edit" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Patient" onclick="editPatient('PT-48293')">
+                            <i class="bi bi-pencil"></i>
+                          </button>
+                          <button class="action-icon-btn btn-delete" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete Patient" onclick="deletePatient('PT-48293')">
+                            <i class="bi bi-trash"></i>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    <!-- Sample Patient Row 4 -->
+                    <tr data-patient-id="PT-48294" data-gender="Female" data-status="Inactive" data-date="2026-06-15">
+                      <td><span class="fw-bold font-monospace">PT-48294</span></td>
+                      <td>
+                        <div class="d-flex align-items-center gap-3">
+                          <div class="user-badge-avatar bg-info-subtle text-info fw-bold">SP</div>
+                          <div>
+                            <span class="fw-semibold d-block text-primary patient-row-name">Sarah Parker</span>
+                            <span class="text-muted text-xs font-sans">sparker@email.com</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td>44</td>
+                      <td>Female</td>
+                      <td>+1 (555) 456-7890</td>
+                      <td>15-Jun-2026</td>
+                      <td><span class="badge badge-inactive rounded-pill px-3 py-1 text-xs">Inactive</span></td>
+                      <td>
+                        <div class="action-btn-group justify-content-end">
+                          <button class="action-icon-btn btn-view" data-bs-toggle="tooltip" data-bs-placement="top" title="View Profile" onclick="viewPatient('PT-48294')">
+                            <i class="bi bi-eye"></i>
+                          </button>
+                          <button class="action-icon-btn btn-edit" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Patient" onclick="editPatient('PT-48294')">
+                            <i class="bi bi-pencil"></i>
+                          </button>
+                          <button class="action-icon-btn btn-delete" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete Patient" onclick="deletePatient('PT-48294')">
+                            <i class="bi bi-trash"></i>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div id="no-patients-alert" class="p-5 text-center d-none">
+                <i class="bi bi-people text-muted h1 d-block mb-3"></i>
+                <h5 class="fw-bold">No patients match your filters</h5>
+                <p class="text-muted text-xs">Try adjusting your search criteria or filter controls.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- ADD PATIENT MODAL -->
+    <div class="modal fade" id="addPatientModal" tabindex="-1" aria-labelledby="addPatientModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content card-custom p-0 border-0 overflow-hidden">
+          <div class="modal-header border-bottom var(--border-color) px-4 py-3" style="background-color: var(--table-header);">
+            <h5 class="modal-title fw-bold text-primary" id="addPatientModalLabel">Add Patient Profile</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <form id="add-patient-form" class="needs-validation" novalidate>
+            <div class="modal-body p-4">
+              <div class="mb-3">
+                <label for="pName" class="form-label form-label-custom">Full Name <span class="text-danger">*</span></label>
+                <input type="text" class="form-control form-control-custom" id="pName" placeholder="e.g. Robert Mahat" required />
+                <div class="invalid-feedback text-xs">Full Name is required.</div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-6">
+                  <label for="pAge" class="form-label form-label-custom">Age <span class="text-danger">*</span></label>
+                  <input type="number" class="form-control form-control-custom" id="pAge" min="0" max="150" placeholder="Age" required />
+                  <div class="invalid-feedback text-xs">Valid age is required.</div>
+                </div>
+                <div class="col-6">
+                  <label for="pGender" class="form-label form-label-custom">Gender <span class="text-danger">*</span></label>
+                  <select class="form-select form-select-custom" id="pGender" required>
+                    <option value="" disabled selected>Select</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                  <div class="invalid-feedback text-xs">Please select gender.</div>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-12 col-sm-6 mb-3 mb-sm-0">
+                  <label for="pPhone" class="form-label form-label-custom">Phone <span class="text-danger">*</span></label>
+                  <input type="tel" class="form-control form-control-custom" id="pPhone" placeholder="+1 (555) 000-0000" required />
+                  <div class="invalid-feedback text-xs">Valid phone number is required.</div>
+                </div>
+                <div class="col-12 col-sm-6">
+                  <label for="pEmail" class="form-label form-label-custom">Email Address <span class="text-danger">*</span></label>
+                  <input type="email" class="form-control form-control-custom" id="pEmail" placeholder="name@domain.com" required />
+                  <div class="invalid-feedback text-xs">Valid email is required.</div>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="pAddress" class="form-label form-label-custom">Home Address <span class="text-danger">*</span></label>
+                <textarea class="form-control form-control-custom" id="pAddress" rows="2" placeholder="Street Address, City, State" required></textarea>
+                <div class="invalid-feedback text-xs">Home Address is required.</div>
+              </div>
+              <div class="mb-3">
+                <label for="pStatus" class="form-label form-label-custom">Status</label>
+                <select class="form-select form-select-custom" id="pStatus">
+                  <option value="Active">Active</option>
+                  <option value="Inactive">Inactive</option>
+                </select>
+              </div>
+            </div>
+            <div class="modal-footer border-top var(--border-color) p-3">
+              <button type="button" class="btn btn-outline-custom" data-bs-dismiss="modal">Cancel</button>
+              <button type="submit" class="btn btn-accent">Save Patient</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- EDIT PATIENT MODAL -->
+    <div class="modal fade" id="editPatientModal" tabindex="-1" aria-labelledby="editPatientModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content card-custom p-0 border-0 overflow-hidden">
+          <div class="modal-header border-bottom var(--border-color) px-4 py-3" style="background-color: var(--table-header);">
+            <h5 class="modal-title fw-bold text-primary" id="editPatientModalLabel">Edit Patient Profile</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <form id="edit-patient-form" class="needs-validation" novalidate>
+            <input type="hidden" id="editPId" />
+            <div class="modal-body p-4">
+              <div class="mb-3">
+                <label for="editPName" class="form-label form-label-custom">Full Name <span class="text-danger">*</span></label>
+                <input type="text" class="form-control form-control-custom" id="editPName" required />
+                <div class="invalid-feedback text-xs">Full Name is required.</div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-6">
+                  <label for="editPAge" class="form-label form-label-custom">Age <span class="text-danger">*</span></label>
+                  <input type="number" class="form-control form-control-custom" id="editPAge" min="0" max="150" required />
+                  <div class="invalid-feedback text-xs">Valid age is required.</div>
+                </div>
+                <div class="col-6">
+                  <label for="editPGender" class="form-label form-label-custom">Gender <span class="text-danger">*</span></label>
+                  <select class="form-select form-select-custom" id="editPGender" required>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                  <div class="invalid-feedback text-xs">Please select gender.</div>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-12 col-sm-6 mb-3 mb-sm-0">
+                  <label for="editPPhone" class="form-label form-label-custom">Phone <span class="text-danger">*</span></label>
+                  <input type="tel" class="form-control form-control-custom" id="editPPhone" required />
+                  <div class="invalid-feedback text-xs">Valid phone number is required.</div>
+                </div>
+                <div class="col-12 col-sm-6">
+                  <label for="editPEmail" class="form-label form-label-custom">Email Address <span class="text-danger">*</span></label>
+                  <input type="email" class="form-control form-control-custom" id="editPEmail" required />
+                  <div class="invalid-feedback text-xs">Valid email is required.</div>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="editPAddress" class="form-label form-label-custom">Home Address <span class="text-danger">*</span></label>
+                <textarea class="form-control form-control-custom" id="editPAddress" rows="2" required></textarea>
+                <div class="invalid-feedback text-xs">Home Address is required.</div>
+              </div>
+              <div class="mb-3">
+                <label for="editPStatus" class="form-label form-label-custom">Status</label>
+                <select class="form-select form-select-custom" id="editPStatus">
+                  <option value="Active">Active</option>
+                  <option value="Inactive">Inactive</option>
+                </select>
+              </div>
+            </div>
+            <div class="modal-footer border-top var(--border-color) p-3">
+              <button type="button" class="btn btn-outline-custom" data-bs-dismiss="modal">Cancel</button>
+              <button type="submit" class="btn btn-accent">Save Changes</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW PATIENT MODAL -->
+    <div class="modal fade" id="viewPatientModal" tabindex="-1" aria-labelledby="viewPatientModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content card-custom p-0 border-0 overflow-hidden">
+          <div class="modal-header border-bottom var(--border-color) px-4 py-3" style="background-color: var(--table-header);">
+            <h5 class="modal-title fw-bold text-primary" id="viewPatientModalLabel">Patient Clinical Profile</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body p-4">
+            <!-- Header Card Inside Modal -->
+            <div class="d-flex align-items-center gap-3 mb-4">
+              <div class="user-badge-avatar bg-primary text-white fw-bold d-flex align-items-center justify-content-center" id="viewAvatar" style="width: 56px; height: 56px; font-size: 1.5rem; border-radius: 50%;">PT</div>
+              <div>
+                <h4 class="fw-bold text-primary mb-0" id="viewName">Arjun Mahat</h4>
+                <div class="text-xs text-muted">ID Label: <strong class="font-monospace text-dark" id="viewId">PT-48291</strong></div>
+              </div>
+            </div>
+
+            <hr class="var(--border-color) my-3" />
+
+            <!-- Core Fields -->
+            <div class="row g-3">
+              <div class="col-6">
+                <span class="d-block text-xs text-muted">Age / Lifespan</span>
+                <span class="fw-semibold text-primary" id="viewAge">38 Years</span>
+              </div>
+              <div class="col-6">
+                <span class="d-block text-xs text-muted">Gender Category</span>
+                <span class="fw-semibold text-primary" id="viewGender">Male</span>
+              </div>
+              <div class="col-6">
+                <span class="d-block text-xs text-muted">Contact Hotline</span>
+                <span class="fw-semibold text-primary" id="viewPhone">+1 (555) 234-5678</span>
+              </div>
+              <div class="col-6">
+                <span class="d-block text-xs text-muted">Email Channel</span>
+                <span class="fw-semibold text-primary text-break" id="viewEmail">amahat@email.com</span>
+              </div>
+              <div class="col-12">
+                <span class="d-block text-xs text-muted">Registered Home Address</span>
+                <span class="fw-semibold text-primary" id="viewAddress">104 Bluebird Dr, San Francisco, CA</span>
+              </div>
+              <div class="col-6">
+                <span class="d-block text-xs text-muted">Latest Laboratory Visit</span>
+                <span class="fw-semibold text-primary" id="viewDate">08-Jul-2026</span>
+              </div>
+              <div class="col-6">
+                <span class="d-block text-xs text-muted">Access Status badge</span>
+                <span id="viewStatusBadge">Active</span>
+              </div>
+            </div>
+
+            <hr class="var(--border-color) my-3" />
+
+            <!-- Sub diagnostics and historical info to enrich the model UI -->
+            <div class="bg-light p-3 rounded border">
+              <strong class="d-block text-xs text-primary mb-2"><i class="bi bi-shield-plus me-1"></i> Clinical Warning & Medical Vitals</strong>
+              <div class="row text-center text-xs text-dark g-2">
+                <div class="col-4 border-end">
+                  <div class="text-muted">Blood Group</div>
+                  <strong class="text-danger">O-Positive (O+)</strong>
+                </div>
+                <div class="col-4 border-end">
+                  <div class="text-muted">Vitals BP</div>
+                  <strong class="text-teal">122 / 80 mmHg</strong>
+                </div>
+                <div class="col-4">
+                  <div class="text-muted">Heart Rate</div>
+                  <strong class="text-teal">74 BPM</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer border-top var(--border-color) p-3">
+            <button type="button" class="btn btn-outline-custom" data-bs-dismiss="modal">Close Profile</button>
+            <button type="button" class="btn btn-accent" id="btn-edit-from-view"><i class="bi bi-pencil-square me-1"></i> Quick Edit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast-notify" class="custom-toast p-3">
+      <div class="d-flex align-items-center gap-3">
+        <div class="bg-success text-white rounded-circle d-inline-flex p-2">
+          <i class="bi bi-check-lg"></i>
+        </div>
+        <div class="flex-grow-1">
+          <strong class="text-primary d-block small" id="toast-title">Success</strong>
+          <span class="text-xs text-muted" id="toast-message">Record updated.</span>
+        </div>
+        <button type="button" class="btn-close text-xs" onclick="hideToast()"></button>
+      </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- AOS JS -->
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+    <!-- Custom JS -->
+    <script type="module" src="/js/main.js"></script>
+
+    <!-- IN-PAGE INTERACTIVE ACTIONS JS -->
+    <script>
+      // In-Memory Patients Database for quick client-side high-fidelity mock CRUD
+      const patientsData = {
+        "PT-48291": {
+          id: "PT-48291",
+          name: "Arjun Mahat",
+          age: 38,
+          gender: "Male",
+          phone: "+1 (555) 234-5678",
+          email: "amahat@email.com",
+          address: "104 Bluebird Dr, San Francisco, CA",
+          lastVisit: "08-Jul-2026",
+          status: "Active"
+        },
+        "PT-48292": {
+          id: "PT-48292",
+          name: "Linda Blair",
+          age: 50,
+          gender: "Female",
+          phone: "+1 (555) 987-6543",
+          email: "lblair@email.com",
+          address: "742 Evergreen Terrace, Seattle, WA",
+          lastVisit: "06-Jul-2026",
+          status: "Active"
+        },
+        "PT-48293": {
+          id: "PT-48293",
+          name: "Robert K.",
+          age: 33,
+          gender: "Male",
+          phone: "+1 (555) 345-6789",
+          email: "robert.k@email.com",
+          address: "12 Pine Street, Portland, OR",
+          lastVisit: "01-Jul-2026",
+          status: "Active"
+        },
+        "PT-48294": {
+          id: "PT-48294",
+          name: "Sarah Parker",
+          age: 44,
+          gender: "Female",
+          phone: "+1 (555) 456-7890",
+          email: "sparker@email.com",
+          address: "95 Broadway Avenue, New York, NY",
+          lastVisit: "15-Jun-2026",
+          status: "Inactive"
+        }
+      };
+
+      // Toast Notification helper
+      function showToast(title, message) {
+        document.getElementById('toast-title').textContent = title;
+        document.getElementById('toast-message').textContent = message;
+        const toast = document.getElementById('toast-notify');
+        toast.style.display = 'block';
+        setTimeout(() => {
+          hideToast();
+        }, 4000);
+      }
+
+      function hideToast() {
+        const toast = document.getElementById('toast-notify');
+        toast.style.display = 'none';
+      }
+
+      // Initialize tooltips
+      function initTooltips() {
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+          return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        initTooltips();
+        updatePatientCount();
+
+        // Register form submissions & validation
+        const addForm = document.getElementById('add-patient-form');
+        addForm.addEventListener('submit', function (e) {
+          e.preventDefault();
+          if (!addForm.checkValidity()) {
+            e.stopPropagation();
+            addForm.classList.add('was-validated');
+            return;
+          }
+
+          const name = document.getElementById('pName').value;
+          const age = document.getElementById('pAge').value;
+          const gender = document.getElementById('pGender').value;
+          const phone = document.getElementById('pPhone').value;
+          const email = document.getElementById('pEmail').value;
+          const address = document.getElementById('pAddress').value;
+          const status = document.getElementById('pStatus').value;
+
+          const newId = "PT-" + Math.floor(40000 + Math.random() * 9000);
+          const currentDate = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).replace(/ /g, '-');
+          const isodate = new Date().toISOString().split('T')[0];
+
+          // Save to state
+          patientsData[newId] = {
+            id: newId,
+            name: name,
+            age: age,
+            gender: gender,
+            phone: phone,
+            email: email,
+            address: address,
+            lastVisit: currentDate,
+            status: status
+          };
+
+          // Append to UI table
+          const initials = name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+          const badgeClass = status === 'Active' ? 'badge-active' : 'badge-inactive';
+          
+          const tbody = document.getElementById('patients-table-body');
+          const tr = document.createElement('tr');
+          tr.setAttribute('data-patient-id', newId);
+          tr.setAttribute('data-gender', gender);
+          tr.setAttribute('data-status', status);
+          tr.setAttribute('data-date', isodate);
+
+          // Avatar theme colors based on initial letters
+          const bgColors = ['primary-subtle', 'success-subtle', 'warning-subtle', 'info-subtle', 'danger-subtle'];
+          const randomBg = bgColors[Math.floor(Math.random() * bgColors.length)];
+          const textColor = randomBg.split('-')[0];
+
+          tr.innerHTML = `
+            <td><span class="fw-bold font-monospace">${newId}</span></td>
+            <td>
+              <div class="d-flex align-items-center gap-3">
+                <div class="user-badge-avatar bg-${randomBg} text-${textColor} fw-bold">${initials}</div>
+                <div>
+                  <span class="fw-semibold d-block text-primary patient-row-name">${name}</span>
+                  <span class="text-muted text-xs font-sans">${email}</span>
+                </div>
+              </div>
+            </td>
+            <td>${age}</td>
+            <td>${gender}</td>
+            <td>${phone}</td>
+            <td>${currentDate}</td>
+            <td><span class="badge ${badgeClass} rounded-pill px-3 py-1 text-xs">${status}</span></td>
+            <td>
+              <div class="action-btn-group justify-content-end">
+                <button class="action-icon-btn btn-view" data-bs-toggle="tooltip" data-bs-placement="top" title="View Profile" onclick="viewPatient('${newId}')">
+                  <i class="bi bi-eye"></i>
+                </button>
+                <button class="action-icon-btn btn-edit" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Patient" onclick="editPatient('${newId}')">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button class="action-icon-btn btn-delete" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete Patient" onclick="deletePatient('${newId}')">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </td>
+          `;
+
+          tbody.appendChild(tr);
+
+          // Close modal
+          const modalEl = document.getElementById('addPatientModal');
+          bootstrap.Modal.getInstance(modalEl).hide();
+
+          // Reset form
+          addForm.reset();
+          addForm.classList.remove('was-validated');
+
+          // Initialize tooltips for new buttons & update counter
+          initTooltips();
+          updatePatientCount();
+          applyFilters();
+
+          showToast("Profile Created", `Patient ${name} registered with medical record label.`);
+        });
+
+        // Edit form submission & logic
+        const editForm = document.getElementById('edit-patient-form');
+        editForm.addEventListener('submit', function (e) {
+          e.preventDefault();
+          if (!editForm.checkValidity()) {
+            e.stopPropagation();
+            editForm.classList.add('was-validated');
+            return;
+          }
+
+          const id = document.getElementById('editPId').value;
+          const name = document.getElementById('editPName').value;
+          const age = document.getElementById('editPAge').value;
+          const gender = document.getElementById('editPGender').value;
+          const phone = document.getElementById('editPPhone').value;
+          const email = document.getElementById('editPEmail').value;
+          const address = document.getElementById('editPAddress').value;
+          const status = document.getElementById('editPStatus').value;
+
+          // Update data store
+          if (patientsData[id]) {
+            patientsData[id].name = name;
+            patientsData[id].age = age;
+            patientsData[id].gender = gender;
+            patientsData[id].phone = phone;
+            patientsData[id].email = email;
+            patientsData[id].address = address;
+            patientsData[id].status = status;
+          }
+
+          // Update UI row
+          const row = document.querySelector(`tr[data-patient-id="${id}"]`);
+          if (row) {
+            row.setAttribute('data-gender', gender);
+            row.setAttribute('data-status', status);
+
+            const initials = name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+            const nameSpan = row.querySelector('.patient-row-name');
+            nameSpan.textContent = name;
+            nameSpan.nextElementSibling.textContent = email;
+
+            const cells = row.querySelectorAll('td');
+            cells[2].textContent = age;
+            cells[3].textContent = gender;
+            cells[4].textContent = phone;
+
+            const badgeCell = cells[6];
+            const badgeClass = status === 'Active' ? 'badge-active' : 'badge-inactive';
+            badgeCell.innerHTML = `<span class="badge ${badgeClass} rounded-pill px-3 py-1 text-xs">${status}</span>`;
+          }
+
+          const editModalEl = document.getElementById('editPatientModal');
+          bootstrap.Modal.getInstance(editModalEl).hide();
+          editForm.classList.remove('was-validated');
+
+          applyFilters();
+          showToast("Changes Saved", `Medical registry for ${name} has been updated.`);
+        });
+
+        // Connect the edit button in view profile modal
+        document.getElementById('btn-edit-from-view').addEventListener('click', function () {
+          const currentId = document.getElementById('viewId').textContent;
+          // Hide view modal
+          const viewModalEl = document.getElementById('viewPatientModal');
+          bootstrap.Modal.getInstance(viewModalEl).hide();
+          
+          // Small delay before opening edit modal for smooth transition
+          setTimeout(() => {
+            editPatient(currentId);
+          }, 450);
+        });
+
+        // Live filtration hookups
+        document.getElementById('filter-search').addEventListener('input', applyFilters);
+        document.getElementById('filter-gender').addEventListener('change', applyFilters);
+        document.getElementById('filter-status').addEventListener('change', applyFilters);
+        document.getElementById('filter-date').addEventListener('change', applyFilters);
+      });
+
+      // Quick Profile Viewer
+      window.viewPatient = function(id) {
+        const patient = patientsData[id];
+        if (!patient) return;
+
+        const initials = patient.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+        document.getElementById('viewAvatar').textContent = initials;
+        document.getElementById('viewName').textContent = patient.name;
+        document.getElementById('viewId').textContent = patient.id;
+        document.getElementById('viewAge').textContent = patient.age + " Years";
+        document.getElementById('viewGender').textContent = patient.gender;
+        document.getElementById('viewPhone').textContent = patient.phone;
+        document.getElementById('viewEmail').textContent = patient.email;
+        document.getElementById('viewAddress').textContent = patient.address;
+        document.getElementById('viewDate').textContent = patient.lastVisit;
+
+        const badgeClass = patient.status === 'Active' ? 'badge badge-active rounded-pill px-3 py-1 text-xs' : 'badge badge-inactive rounded-pill px-3 py-1 text-xs';
+        document.getElementById('viewStatusBadge').className = badgeClass;
+        document.getElementById('viewStatusBadge').textContent = patient.status;
+
+        const viewModal = new bootstrap.Modal(document.getElementById('viewPatientModal'));
+        viewModal.show();
+      };
+
+      // Quick Profile Editor Pre-populator
+      window.editPatient = function(id) {
+        const patient = patientsData[id];
+        if (!patient) return;
+
+        document.getElementById('editPId').value = patient.id;
+        document.getElementById('editPName').value = patient.name;
+        document.getElementById('editPAge').value = patient.age;
+        document.getElementById('editPGender').value = patient.gender;
+        document.getElementById('editPPhone').value = patient.phone;
+        document.getElementById('editPEmail').value = patient.email;
+        document.getElementById('editPAddress').value = patient.address;
+        document.getElementById('editPStatus').value = patient.status;
+
+        const editModal = new bootstrap.Modal(document.getElementById('editPatientModal'));
+        editModal.show();
+      };
+
+      // Quick Delete Patient Profile Action
+      window.deletePatient = function(id) {
+        const patient = patientsData[id];
+        if (!patient) return;
+
+        if (confirm(`Are you absolutely sure you want to delete patient ${patient.name} (${id}) from the clinic database permanently? This action cannot be undone.`)) {
+          // Remove from memory
+          delete patientsData[id];
+
+          // Fade out and remove row from UI
+          const row = document.querySelector(`tr[data-patient-id="${id}"]`);
+          if (row) {
+            row.style.transition = 'all 0.3s ease';
+            row.style.opacity = '0';
+            row.style.transform = 'translateX(-20px)';
+            setTimeout(() => {
+              row.remove();
+              updatePatientCount();
+              applyFilters();
+              showToast("Record Deleted", `Patient record ${id} has been erased completely.`);
+            }, 300);
+          }
+        }
+      };
+
+      // Filter Controller logic
+      function applyFilters() {
+        const searchQuery = document.getElementById('filter-search').value.toLowerCase().trim();
+        const selectedGender = document.getElementById('filter-gender').value;
+        const selectedStatus = document.getElementById('filter-status').value;
+        const selectedDate = document.getElementById('filter-date').value; // format: YYYY-MM-DD
+
+        const rows = document.querySelectorAll('#patients-table-body tr');
+        let visibleCount = 0;
+
+        rows.forEach(row => {
+          const id = row.getAttribute('data-patient-id');
+          const name = row.querySelector('.patient-row-name').textContent.toLowerCase();
+          const phone = row.cells[4].textContent;
+          const gender = row.getAttribute('data-gender');
+          const status = row.getAttribute('data-status');
+          const date = row.getAttribute('data-date'); // YYYY-MM-DD
+
+          // Search criteria check (id, name or phone)
+          const matchesSearch = id.toLowerCase().includes(searchQuery) || name.includes(searchQuery) || phone.includes(searchQuery);
+          
+          // Gender criteria check
+          const matchesGender = selectedGender === 'All' || gender === selectedGender;
+
+          // Status criteria check
+          const matchesStatus = selectedStatus === 'All' || status === selectedStatus;
+
+          // Date criteria check
+          const matchesDate = !selectedDate || date === selectedDate;
+
+          if (matchesSearch && matchesGender && matchesStatus && matchesDate) {
+            row.style.display = '';
+            visibleCount++;
+          } else {
+            row.style.display = 'none';
+          }
+        });
+
+        // Toggle no patients alert & update visible counter
+        const noResults = document.getElementById('no-results-card') || document.getElementById('no-patients-alert');
+        if (visibleCount === 0) {
+          noResults.classList.remove('d-none');
+        } else {
+          noResults.classList.add('d-none');
+        }
+
+        document.getElementById('patient-count-badge').textContent = visibleCount;
+      }
+
+      function updatePatientCount() {
+        const rows = document.querySelectorAll('#patients-table-body tr');
+        document.getElementById('patient-count-badge').textContent = rows.length;
+      }
+    </script>
+  </body>
+</html>

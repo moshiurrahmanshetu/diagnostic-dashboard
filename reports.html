@@ -1,0 +1,1112 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MediScan - Reports &amp; Lab Tests</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- AOS CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom Style -->
+    <link href="/css/style.css" rel="stylesheet" />
+    <style>
+      /* Page-specific customized styles to guarantee premium visual design */
+      .chart-container {
+        position: relative;
+        height: 250px;
+        width: 100%;
+      }
+      
+      /* Action Buttons styling */
+      .action-icon-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--border-color);
+        background-color: var(--bg-card);
+        color: var(--text-secondary);
+        transition: all 0.2s ease;
+        cursor: pointer;
+        padding: 0;
+      }
+      .action-icon-btn:hover {
+        background-color: var(--accent-color);
+        color: #ffffff;
+        border-color: var(--accent-color);
+        transform: translateY(-1px);
+      }
+      .action-icon-btn.btn-delete:hover {
+        background-color: #ef4444;
+        border-color: #ef4444;
+        color: #ffffff;
+      }
+      .action-icon-btn.btn-download:hover {
+        background-color: #3b82f6;
+        border-color: #3b82f6;
+        color: #ffffff;
+      }
+      
+      /* Toast styling */
+      .custom-toast {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        z-index: 1060;
+        background-color: var(--bg-card);
+        border: 1px solid var(--border-color);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        border-radius: 12px;
+        min-width: 300px;
+        display: none;
+        animation: slideUp 0.3s ease-out;
+      }
+      @keyframes slideUp {
+        from { transform: translateY(100px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+      }
+    </style>
+  </head>
+  <body>
+
+    <!-- Sidebar Layout -->
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon">
+          <i class="bi bi-activity"></i>
+        </div>
+        <span class="brand-name">MediScan</span>
+      </div>
+
+      <nav class="sidebar-menu">
+        <ul class="sidebar-menu-list">
+          <li class="sidebar-item">
+            <a href="index.html" class="sidebar-link">
+              <i class="bi bi-grid-1x2-fill"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="sidebar-item">
+            <a href="patients.html" class="sidebar-link">
+              <i class="bi bi-people"></i>
+              <span>Patients</span>
+            </a>
+          </li>
+          <li class="sidebar-item">
+            <a href="doctors.html" class="sidebar-link">
+              <i class="bi bi-heart-pulse"></i>
+              <span>Doctors</span>
+            </a>
+          </li>
+          <li class="sidebar-item">
+            <a href="appointments.html" class="sidebar-link">
+              <i class="bi bi-calendar-event"></i>
+              <span>Appointments</span>
+            </a>
+          </li>
+          <li class="sidebar-item">
+            <a href="reports.html" class="sidebar-link active">
+              <i class="bi bi-journal-text-fill"></i>
+              <span>Lab Reports</span>
+            </a>
+          </li>
+          <li class="sidebar-item">
+            <a href="lab-tests.html" class="sidebar-link">
+              <i class="bi bi-clipboard2-pulse"></i>
+              <span>Lab Tests</span>
+            </a>
+          </li>
+          <li class="sidebar-item">
+            <a href="billing.html" class="sidebar-link">
+              <i class="bi bi-credit-card"></i>
+              <span>Billing</span>
+            </a>
+          </li>
+          <li class="sidebar-item">
+            <a href="settings.html" class="sidebar-link">
+              <i class="bi bi-gear"></i>
+              <span>Settings</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-badge">
+          <div class="user-badge-avatar">SJ</div>
+          <div class="user-badge-info">
+            <span class="user-badge-name">Sarah Jenkins</span>
+            <span class="user-badge-role">MD, Pathologist</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Top Navbar -->
+      <header class="top-navbar">
+        <div class="navbar-left">
+          <button id="sidebar-toggle" class="sidebar-toggle-btn">
+            <i class="bi bi-list"></i>
+          </button>
+          <div class="search-wrapper">
+            <i class="bi bi-search"></i>
+            <input type="text" id="search-patient" class="search-input" placeholder="Filter diagnostic lab reports..." />
+          </div>
+        </div>
+
+        <div class="navbar-actions">
+          <!-- Day/Night Toggle Switch -->
+          <div class="theme-switch-container">
+            <button id="btn-theme-light" class="theme-switch-btn active">
+              <i class="bi bi-sun-fill"></i> Day
+            </button>
+            <button id="btn-theme-dark" class="theme-switch-btn">
+              <i class="bi bi-moon-fill"></i> Night
+            </button>
+          </div>
+
+          <!-- Notification Dropdown -->
+          <div class="dropdown">
+            <button class="navbar-action-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="bi bi-bell"></i>
+              <span class="badge-dot"></span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-custom p-2 mt-2" style="width: 280px;">
+              <li class="px-3 py-2 border-bottom var(--border-color) d-flex justify-content-between align-items-center">
+                <span class="fw-bold text-primary">Notifications</span>
+                <span class="badge bg-danger rounded-pill">3 New</span>
+              </li>
+              <li><a class="dropdown-item dropdown-item-custom py-2" href="reports.html">
+                <div class="d-flex flex-column">
+                  <span class="fw-semibold">Abnormal Blood Test #4829</span>
+                  <span class="text-xs text-muted">2 mins ago</span>
+                </div>
+              </a></li>
+              <li><a class="dropdown-item dropdown-item-custom py-2" href="appointments.html">
+                <div class="d-flex flex-column">
+                  <span class="fw-semibold">New Appointment: Arjun Mahat</span>
+                  <span class="text-xs text-muted">1 hour ago</span>
+                </div>
+              </a></li>
+              <li><a class="dropdown-item dropdown-item-custom py-2" href="settings.html">
+                <div class="d-flex flex-column">
+                  <span class="fw-semibold">Sysmex Calibration Finished</span>
+                  <span class="text-xs text-muted">Yesterday</span>
+                </div>
+              </a></li>
+            </ul>
+          </div>
+
+          <!-- User Profile Dropdown -->
+          <div class="dropdown">
+            <button class="profile-dropdown-trigger" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <div class="profile-avatar">SJ</div>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-custom p-2 mt-2">
+              <li class="px-3 py-2">
+                <p class="mb-0 fw-bold">Dr. Sarah Jenkins</p>
+                <p class="mb-0 text-muted small">sjenkins@mediscan.com</p>
+              </li>
+              <li class="dropdown-divider-custom"></li>
+              <li><a class="dropdown-item dropdown-item-custom" href="settings.html"><i class="bi bi-person me-2"></i>My Profile</a></li>
+              <li><a class="dropdown-item dropdown-item-custom" href="settings.html"><i class="bi bi-gear me-2"></i>Account Settings</a></li>
+              <li class="dropdown-divider-custom"></li>
+              <li><a class="dropdown-item dropdown-item-custom text-danger" href="login.html"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+
+      <!-- Page Content Container -->
+      <div class="page-container">
+        <!-- Breadcrumbs & Heading -->
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3 mb-4" data-aos="fade-down">
+          <div>
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb mb-1 text-xs">
+                <li class="breadcrumb-item"><a href="index.html" class="text-decoration-none text-muted">Dashboard</a></li>
+                <li class="breadcrumb-item active text-primary" aria-current="page">Reports &amp; Lab Tests</li>
+              </ol>
+            </nav>
+            <h1 class="h3 fw-bold mb-1">Reports &amp; Lab Tests</h1>
+            <p class="text-muted mb-0 text-sm">Review patient pathological results, analyze diagnostics telemetry, and sign off test releases.</p>
+          </div>
+          <button class="btn btn-accent d-flex align-items-center gap-2 animate-lift" data-bs-toggle="modal" data-bs-target="#addReportModal">
+            <i class="bi bi-file-earmark-plus"></i> Add Test Report
+          </button>
+        </div>
+
+        <!-- Filter & Search Toolbar Panel -->
+        <div class="card-custom mb-4 p-3" data-aos="fade-up">
+          <div class="row g-3">
+            <div class="col-12 col-md-4">
+              <label class="form-label form-label-custom mb-1 text-xs">Search Patient or Diagnostic Test</label>
+              <div class="input-group">
+                <span class="input-group-text bg-transparent border-end-0 var(--border-color)"><i class="bi bi-search text-muted"></i></span>
+                <input type="text" id="report-search-input" class="form-control form-control-custom border-start-0" placeholder="Search report ID, test, patient..." />
+              </div>
+            </div>
+            <div class="col-12 col-sm-6 col-md-4">
+              <label class="form-label form-label-custom mb-1 text-xs">Diagnostic Test Type</label>
+              <select class="form-select form-select-custom" id="filter-test-type">
+                <option value="All">All Test Modalities</option>
+                <option value="Complete Blood Count (CBC)">Complete Blood Count (CBC)</option>
+                <option value="Cardiac Profile / Troponin T">Cardiac Profile / Troponin T</option>
+                <option value="MRI Lumbar Spine">MRI Lumbar Spine</option>
+                <option value="Thyroid Panel (TSH, Free T4)">Thyroid Panel (TSH, Free T4)</option>
+                <option value="Lipid Profile">Lipid Profile</option>
+              </select>
+            </div>
+            <div class="col-12 col-sm-6 col-md-4">
+              <label class="form-label form-label-custom mb-1 text-xs">Result Status</label>
+              <select class="form-select form-select-custom" id="filter-status">
+                <option value="All">All Statuses</option>
+                <option value="Completed">Completed / Ready</option>
+                <option value="Pending">Pending / Processing</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Analytics Row -->
+        <div class="row g-4 mb-4" data-aos="fade-up" data-aos-delay="50">
+          <div class="col-12 col-xl-6">
+            <div class="card-custom mb-0 h-100">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                  <h5 class="fw-bold text-primary mb-1 text-sm"><i class="bi bi-bar-chart-line me-2"></i>Workload Distribution</h5>
+                  <p class="text-xs text-muted mb-0">Diagnostic test volumes logged per clinical modality</p>
+                </div>
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle text-xs px-2 py-1 font-monospace">Types</span>
+              </div>
+              <div class="chart-container">
+                <canvas id="reportsTypeChart"></canvas>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-12 col-xl-6">
+            <div class="card-custom mb-0 h-100">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                  <h5 class="fw-bold text-primary mb-1 text-sm"><i class="bi bi-graph-up me-2"></i>Release Stream Velocity</h5>
+                  <p class="text-xs text-muted mb-0">Log frequency of diagnostic releases over calendar timeline</p>
+                </div>
+                <span class="badge bg-success-subtle text-success border border-success-subtle text-xs px-2 py-1 font-monospace">Daily</span>
+              </div>
+              <div class="chart-container">
+                <canvas id="reportsTimeChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reports Grid List -->
+        <div class="row" data-aos="fade-up" data-aos-delay="100">
+          <div class="col-12">
+            <div class="card-custom p-0 overflow-hidden">
+              <div class="table-responsive">
+                <table class="table table-custom align-middle text-nowrap" id="reports-table">
+                  <thead>
+                    <tr>
+                      <th class="ps-4">Report ID</th>
+                      <th>Patient Name</th>
+                      <th>Diagnostic Test</th>
+                      <th>Authorized By</th>
+                      <th>Release Date</th>
+                      <th>Critical Flag</th>
+                      <th>Status</th>
+                      <th class="pe-4 text-end">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="reports-tbody">
+                    <!-- Populated dynamically via JS -->
+                  </tbody>
+                </table>
+              </div>
+              
+              <!-- Empty State Alert -->
+              <div id="no-reports-alert" class="p-5 text-center d-none">
+                <i class="bi bi-folder-x text-muted h1 d-block mb-3"></i>
+                <h5 class="fw-bold">No Diagnostics Reports Found</h5>
+                <p class="text-muted text-xs mb-0">No records match your filters. Try clearing search fields or picking another modality.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- REPORT PREVIEW MODAL -->
+    <div class="modal fade" id="reportPreviewModal" tabindex="-1" aria-labelledby="reportPreviewModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content card-custom p-0 border-0 overflow-hidden">
+          <div class="modal-header border-bottom var(--border-color) px-4 py-3" style="background-color: var(--table-header);">
+            <div>
+              <h5 class="modal-title fw-bold text-primary mb-0" id="reportPreviewModalLabel">Detailed Diagnostics Analysis</h5>
+              <span class="text-xs text-muted">Reference File: <strong id="viewReportIdTitle" class="font-monospace text-dark">REP-1001</strong></span>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body p-4">
+            <!-- Header section inside Modal -->
+            <div class="d-flex align-items-center gap-3 mb-4">
+              <div id="viewReportInitials" class="user-badge-avatar bg-primary-subtle text-primary fw-bold" style="width: 56px; height: 56px; font-size: 1.25rem;">AM</div>
+              <div>
+                <h4 class="fw-bold text-primary mb-0" id="viewReportPatientName">Arjun Mahat</h4>
+                <div class="text-xs text-muted">Patient ID: <strong id="viewReportPatientId" class="font-monospace text-dark">#48291</strong></div>
+              </div>
+            </div>
+
+            <hr class="var(--border-color) my-3" />
+
+            <!-- Core clinical stats & identifiers -->
+            <div class="row g-3 mb-4">
+              <div class="col-6 col-md-3">
+                <span class="d-block text-xs text-muted">Assigned Doctor</span>
+                <span class="fw-semibold text-primary" id="viewReportDoctor">Dr. Robert K.</span>
+              </div>
+              <div class="col-6 col-md-3">
+                <span class="d-block text-xs text-muted">Diagnostic Modality</span>
+                <span class="fw-semibold text-dark text-sm" id="viewReportTestType">Complete Blood Count (CBC)</span>
+              </div>
+              <div class="col-6 col-md-3">
+                <span class="d-block text-xs text-muted">Release Date</span>
+                <span class="fw-semibold text-primary" id="viewReportDate">10-Jul-2026</span>
+              </div>
+              <div class="col-6 col-md-3">
+                <span class="d-block text-xs text-muted">Current Status</span>
+                <span id="viewReportStatusBadge" class="badge-custom badge-ready">Completed</span>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="fw-bold text-primary mb-0">Physiological Metrics Summary</h6>
+                <span id="viewReportCriticalBadge" class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1 text-xs rounded">Critical Low</span>
+              </div>
+              <div class="bg-light p-3 rounded border font-monospace text-xs text-dark" id="viewReportSummary" style="white-space: pre-wrap; line-height: 1.6;">
+                Hemoglobin: 14.2 g/dL (Normal)
+                White Blood Cells: 7.8 x10^3/µL (Normal)
+                Platelet Count: 115 x10^3/µL (Low)
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <h6 class="fw-bold text-primary mb-2">Authorized Pathologist Comments / Indications</h6>
+              <div class="bg-light p-3 rounded border text-sm text-dark leading-relaxed" id="viewReportNotes" style="white-space: pre-wrap;">
+                Patient displays a moderate state of thrombocytopenia. Erythrocytes, hematocrits, and total leukocyte ranges are perfectly within nominal baselines.
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center p-3 border rounded" style="background-color: var(--table-header);">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-shield-check text-teal h4 mb-0" style="color: var(--accent-color);"></i>
+                <div>
+                  <span class="fw-semibold d-block small text-primary">Digitally Signed &amp; Validated</span>
+                  <span class="text-xs text-muted">Chief Medical Assayer | pathology-signoff-ca</span>
+                </div>
+              </div>
+              <span class="text-xs text-muted font-monospace" id="viewReportId">REP-1001</span>
+            </div>
+          </div>
+          <div class="modal-footer border-top var(--border-color) p-3">
+            <button type="button" class="btn btn-outline-custom" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-accent" id="btn-modal-print"><i class="bi bi-printer me-1"></i> Print / Download PDF</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADD TEST REPORT MODAL -->
+    <div class="modal fade" id="addReportModal" tabindex="-1" aria-labelledby="addReportModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content card-custom p-0 border-0 overflow-hidden">
+          <div class="modal-header border-bottom var(--border-color) px-4 py-3" style="background-color: var(--table-header);">
+            <h5 class="modal-title fw-bold text-primary" id="addReportModalLabel">Add Diagnostic Test Report</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <form id="add-report-form" class="needs-validation" novalidate>
+            <div class="modal-body p-4">
+              <div class="row g-3">
+                <div class="col-12 col-md-6">
+                  <label for="addPatientName" class="form-label form-label-custom">Patient Full Name <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control form-control-custom" id="addPatientName" placeholder="e.g. Linda Blair" required />
+                  <div class="invalid-feedback text-xs">Patient Name is required.</div>
+                </div>
+                
+                <div class="col-12 col-md-6">
+                  <label for="addDoctor" class="form-label form-label-custom">Authorizing Clinician <span class="text-danger">*</span></label>
+                  <select class="form-select form-select-custom" id="addDoctor" required>
+                    <option value="" disabled selected>Select Specialist</option>
+                    <option value="Dr. Sarah Jenkins">Dr. Sarah Jenkins (Pathology)</option>
+                    <option value="Dr. Robert K.">Dr. Robert K. (Endocrinology)</option>
+                    <option value="Dr. Alan Grant">Dr. Alan Grant (Radiology)</option>
+                    <option value="Dr. Elena Rostova">Dr. Elena Rostova (Cardiology)</option>
+                  </select>
+                  <div class="invalid-feedback text-xs">Please select a clinician.</div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <label for="addTestType" class="form-label form-label-custom">Diagnostic Test Type <span class="text-danger">*</span></label>
+                  <select class="form-select form-select-custom" id="addTestType" required>
+                    <option value="" disabled selected>Select Modality</option>
+                    <option value="Complete Blood Count (CBC)">Complete Blood Count (CBC)</option>
+                    <option value="Cardiac Profile / Troponin T">Cardiac Profile / Troponin T</option>
+                    <option value="MRI Lumbar Spine">MRI Lumbar Spine</option>
+                    <option value="Thyroid Panel (TSH, Free T4)">Thyroid Panel (TSH, Free T4)</option>
+                    <option value="Lipid Profile">Lipid Profile</option>
+                    <option value="Other">Other (Type custom modality)</option>
+                  </select>
+                  <div class="invalid-feedback text-xs">Please select a test modality.</div>
+                </div>
+
+                <div class="col-12 col-md-6" id="customTestTypeWrapper" style="display: none;">
+                  <label for="addTestTypeCustom" class="form-label form-label-custom">Custom Test Modality Name <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control form-control-custom" id="addTestTypeCustom" placeholder="e.g. Urine Analysis" />
+                  <div class="invalid-feedback text-xs">Custom Test modality name is required.</div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <label for="addDate" class="form-label form-label-custom">Release Date <span class="text-danger">*</span></label>
+                  <input type="date" class="form-control form-control-custom" id="addDate" required />
+                  <div class="invalid-feedback text-xs">Please select a valid release date.</div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <label for="addStatus" class="form-label form-label-custom">Result Status <span class="text-danger">*</span></label>
+                  <select class="form-select form-select-custom" id="addStatus" required>
+                    <option value="Completed" selected>Completed / Ready</option>
+                    <option value="Pending">Pending / Processing</option>
+                  </select>
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <label for="addCriticalFlag" class="form-label form-label-custom">Critical Alert Flag</label>
+                  <input type="text" class="form-control form-control-custom" id="addCriticalFlag" placeholder="e.g. Low Platelets (Leave empty if Normal)" />
+                </div>
+
+                <div class="col-12">
+                  <label for="addResultSummary" class="form-label form-label-custom">Physiological Metrics / Results Summary <span class="text-danger">*</span></label>
+                  <textarea class="form-control form-control-custom font-monospace" id="addResultSummary" rows="3" placeholder="Hemoglobin: 14.5 g/dL&#10;WBC: 7.2 x10^3/µL&#10;Platelets: 210 x10^3/µL" required></textarea>
+                  <div class="invalid-feedback text-xs">Result metrics are required.</div>
+                </div>
+
+                <div class="col-12">
+                  <label for="addDoctorNote" class="form-label form-label-custom">Authorized Pathologist Comments / Notes <span class="text-danger">*</span></label>
+                  <textarea class="form-control form-control-custom" id="addDoctorNote" rows="3" placeholder="No acute abnormalities observed. Patient ranges are perfectly stable." required></textarea>
+                  <div class="invalid-feedback text-xs">Doctor comment note is required.</div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer border-top var(--border-color) p-3">
+              <button type="button" class="btn btn-outline-custom" data-bs-dismiss="modal">Cancel</button>
+              <button type="submit" class="btn btn-accent">Save Test Report</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast-notify" class="custom-toast p-3">
+      <div class="d-flex align-items-center gap-3">
+        <div class="bg-success text-white rounded-circle d-inline-flex p-2">
+          <i class="bi bi-check-lg"></i>
+        </div>
+        <div class="flex-grow-1">
+          <strong class="text-primary d-block small" id="toast-title">Success</strong>
+          <span class="text-xs text-muted" id="toast-message">Reports registry updated successfully.</span>
+        </div>
+        <button type="button" class="btn-close text-xs" onclick="hideToast()" style="background: none; border: none; font-size: 1.2rem; line-height: 1;"><i class="bi bi-x"></i></button>
+      </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- AOS JS -->
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+    <!-- Custom JS -->
+    <script type="module" src="/js/main.js"></script>
+
+    <!-- IN-MEMORY DATABASE & CONTROLLER -->
+    <script>
+      // Initial reports database
+      const initialReports = [
+        {
+          id: "REP-1001",
+          patientName: "Arjun Mahat",
+          patientId: "#48291",
+          testType: "Complete Blood Count (CBC)",
+          date: "2026-07-10",
+          status: "Completed",
+          criticalFlag: "Low Platelets",
+          resultSummary: "Hemoglobin: 14.2 g/dL (Normal)\nWhite Blood Cells: 7.8 x10^3/µL (Normal)\nPlatelets Count: 115 x10^3/µL (CRITICAL LOW)",
+          doctorNote: "Patient displays a moderate state of thrombocytopenia. Suggested correlation with coagulation profiles, specifically D-dimer assays or further clinical investigation.",
+          doctorName: "Dr. Sarah Jenkins"
+        },
+        {
+          id: "REP-1002",
+          patientName: "Linda Blair",
+          patientId: "#48292",
+          testType: "Cardiac Profile / Troponin T",
+          date: "2026-07-10",
+          status: "Pending",
+          criticalFlag: "—",
+          resultSummary: "Cardiac Troponin T biochemical assays are currently processing in the clinical lab analyzer suite.",
+          doctorNote: "Awaiting automatic calibration outputs from Beckman Coulter analyzer. Patient monitoring under cardiac telemetry is advised.",
+          doctorName: "Dr. Sarah Jenkins"
+        },
+        {
+          id: "REP-1003",
+          patientName: "Robert K.",
+          patientId: "#48293",
+          testType: "MRI Lumbar Spine",
+          date: "2026-07-11",
+          status: "Completed",
+          criticalFlag: "Disc Bulge",
+          resultSummary: "L4-L5 level displays a 3.2mm posterior disc protrusion causing minor compression of the anterior focal sac.",
+          doctorNote: "Review results with outpatient neurology clinic. Patient advised to avoid heavy load exercises, and start core physical therapy regimen.",
+          doctorName: "Dr. Alan Grant"
+        },
+        {
+          id: "REP-1004",
+          patientName: "Sarah Parker",
+          patientId: "#48294",
+          testType: "Thyroid Panel (TSH, Free T4)",
+          date: "2026-07-12",
+          status: "Completed",
+          criticalFlag: "High TSH",
+          resultSummary: "Thyroid Stimulating Hormone (TSH): 5.8 mIU/L (High)\nFree Thyroxine (FT4): 1.1 ng/dL (Normal Range)",
+          doctorNote: "Mild subclinical thyroid elevation. Recommend monitoring endocrine parameters and repeat test in 90 days. No immediate active pharmacotherapy required.",
+          doctorName: "Dr. Robert K."
+        },
+        {
+          id: "REP-1005",
+          patientName: "Marcus Aurelius",
+          patientId: "#48295",
+          testType: "Lipid Profile",
+          date: "2026-07-14",
+          status: "Completed",
+          criticalFlag: "High LDL",
+          resultSummary: "Total Cholesterol: 240 mg/dL (High)\nTriglycerides: 185 mg/dL (Borderline High)\nHDL Cholesterol: 42 mg/dL (Normal)\nLDL Cholesterol: 161 mg/dL (High)",
+          doctorNote: "Atherogenic index is moderately elevated. Patient instructed on cardiovascular diet plans, low-fat nutrition, and active lifestyle follow-ups.",
+          doctorName: "Dr. Elena Rostova"
+        }
+      ];
+
+      const STORAGE_KEY = "mediscan_reports";
+      let reportsData = [];
+
+      // Load reports
+      function loadReports() {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          try {
+            reportsData = JSON.parse(saved);
+          } catch (e) {
+            reportsData = [...initialReports];
+          }
+        } else {
+          reportsData = [...initialReports];
+        }
+      }
+
+      function saveReports() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(reportsData));
+      }
+
+      // Toast helper
+      window.showToast = function(title, message) {
+        document.getElementById('toast-title').textContent = title;
+        document.getElementById('toast-message').textContent = message;
+        const toast = document.getElementById('toast-notify');
+        toast.style.display = 'block';
+        setTimeout(() => {
+          hideToast();
+        }, 4000);
+      };
+
+      window.hideToast = function() {
+        const toast = document.getElementById('toast-notify');
+        if (toast) toast.style.display = 'none';
+      };
+
+      // Chart.js references
+      let typeChartObj = null;
+      let timeChartObj = null;
+
+      // Detect visual theme colors
+      function getChartColors() {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        return {
+          textColor: isDark ? '#94a3b8' : '#64748b',
+          gridColor: isDark ? '#222b40' : '#e2e8f0',
+          accentColor: isDark ? '#2dd4bf' : '#0d9488',
+          secondaryAccent: '#3b82f6',
+          dangerAccent: '#f43f5e',
+          warningAccent: '#fbbf24',
+          borderColor: isDark ? '#151c2c' : '#ffffff',
+          tooltipBg: isDark ? '#1e293b' : '#ffffff'
+        };
+      }
+
+      // Compile and render live Chart data
+      function renderCharts() {
+        const colors = getChartColors();
+        
+        // 1. Data Aggregation for Bar Chart (Tests per type)
+        const typeCounts = {};
+        reportsData.forEach(r => {
+          typeCounts[r.testType] = (typeCounts[r.testType] || 0) + 1;
+        });
+
+        const typeLabels = Object.keys(typeCounts);
+        const typeData = Object.values(typeCounts);
+
+        const typeCtx = document.getElementById('reportsTypeChart');
+        if (typeCtx) {
+          if (typeChartObj) typeChartObj.destroy();
+          typeChartObj = new Chart(typeCtx, {
+            type: 'bar',
+            data: {
+              labels: typeLabels.map(l => l.length > 20 ? l.slice(0, 17) + '...' : l),
+              datasets: [{
+                label: 'Logged Reports',
+                data: typeData,
+                backgroundColor: colors.accentColor,
+                borderRadius: 6,
+                maxBarThickness: 32
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: { display: false },
+                tooltip: {
+                  backgroundColor: colors.tooltipBg,
+                  titleColor: colors.textColor,
+                  bodyColor: colors.textColor,
+                  borderColor: colors.gridColor,
+                  borderWidth: 1,
+                  callbacks: {
+                    title: function(context) {
+                      return typeLabels[context[0].dataIndex];
+                    }
+                  }
+                }
+              },
+              scales: {
+                x: {
+                  grid: { color: colors.gridColor },
+                  ticks: { color: colors.textColor, font: { family: 'Inter', size: 10 } }
+                },
+                y: {
+                  grid: { color: colors.gridColor },
+                  ticks: { color: colors.textColor, font: { family: 'Inter', size: 10 }, stepSize: 1 }
+                }
+              }
+            }
+          });
+        }
+
+        // 2. Data Aggregation for Line Chart (Reports over time)
+        const timeCounts = {};
+        reportsData.forEach(r => {
+          if (r.date !== 'Pending') {
+            timeCounts[r.date] = (timeCounts[r.date] || 0) + 1;
+          }
+        });
+
+        const sortedDates = Object.keys(timeCounts).sort();
+        const timeData = sortedDates.map(d => timeCounts[d]);
+
+        // Format dates nicely for x-axis
+        const formattedDates = sortedDates.map(d => {
+          const parts = d.split('-');
+          if (parts.length === 3) {
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            return `${parts[2]} ${months[parseInt(parts[1]) - 1]}`;
+          }
+          return d;
+        });
+
+        const timeCtx = document.getElementById('reportsTimeChart');
+        if (timeCtx) {
+          if (timeChartObj) timeChartObj.destroy();
+          timeChartObj = new Chart(timeCtx, {
+            type: 'line',
+            data: {
+              labels: formattedDates,
+              datasets: [{
+                label: 'Releases',
+                data: timeData,
+                borderColor: colors.secondaryAccent,
+                backgroundColor: 'rgba(59, 130, 246, 0.08)',
+                fill: true,
+                tension: 0.35,
+                borderWidth: 2.5,
+                pointRadius: 4,
+                pointBackgroundColor: colors.secondaryAccent
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: { display: false },
+                tooltip: {
+                  backgroundColor: colors.tooltipBg,
+                  titleColor: colors.textColor,
+                  bodyColor: colors.textColor,
+                  borderColor: colors.gridColor,
+                  borderWidth: 1
+                }
+              },
+              scales: {
+                x: {
+                  grid: { color: colors.gridColor },
+                  ticks: { color: colors.textColor, font: { family: 'Inter', size: 10 } }
+                },
+                y: {
+                  grid: { color: colors.gridColor },
+                  ticks: { color: colors.textColor, font: { family: 'Inter', size: 10 }, stepSize: 1 }
+                }
+              }
+            }
+          });
+        }
+      }
+
+      // Render diagnostic reports grid table
+      function renderTable() {
+        const tbody = document.getElementById('reports-tbody');
+        if (!tbody) return;
+
+        tbody.innerHTML = '';
+
+        const searchQuery = document.getElementById('report-search-input').value.toLowerCase();
+        const typeQuery = document.getElementById('filter-test-type').value;
+        const statusQuery = document.getElementById('filter-status').value;
+
+        let visibleCount = 0;
+
+        reportsData.forEach(rep => {
+          const matchesSearch = rep.patientName.toLowerCase().includes(searchQuery) ||
+                                rep.testType.toLowerCase().includes(searchQuery) ||
+                                rep.id.toLowerCase().includes(searchQuery);
+
+          const matchesType = typeQuery === 'All' || rep.testType === typeQuery;
+          const matchesStatus = statusQuery === 'All' || rep.status === statusQuery;
+
+          if (matchesSearch && matchesType && matchesStatus) {
+            visibleCount++;
+
+            let statusBadgeClass = "badge-pending";
+            if (rep.status === "Completed") statusBadgeClass = "badge-ready";
+            if (rep.status === "Pending") statusBadgeClass = "badge-processing";
+
+            const initials = rep.patientName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td class="ps-4 font-monospace fw-semibold text-primary">${rep.id}</td>
+              <td>
+                <div class="d-flex align-items-center gap-3">
+                  <div class="user-badge-avatar bg-light text-dark fw-bold" style="width: 32px; height: 32px; font-size: 11px;">${initials}</div>
+                  <div>
+                    <span class="fw-semibold d-block text-sm">${rep.patientName}</span>
+                    <span class="text-xs text-muted">ID: ${rep.patientId}</span>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="fw-medium text-dark">${rep.testType}</span>
+              </td>
+              <td>
+                <span class="fw-medium">${rep.doctorName}</span>
+              </td>
+              <td>
+                <span class="fw-medium text-sm text-secondary">${rep.date === 'Pending' ? '<span class="text-xs text-amber-500 fw-bold"><i class="bi bi-clock-history me-1"></i>In Queue</span>' : rep.date}</span>
+              </td>
+              <td>
+                ${rep.criticalFlag && rep.criticalFlag !== '—' 
+                  ? `<span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1 text-xs rounded">${rep.criticalFlag}</span>` 
+                  : `<span class="text-muted small">—</span>`}
+              </td>
+              <td>
+                <span class="badge-custom ${statusBadgeClass}">${rep.status}</span>
+              </td>
+              <td class="pe-4 text-end">
+                <div class="d-flex justify-content-end gap-2">
+                  <button class="action-icon-btn" onclick="viewReport('${rep.id}')" title="View Detailed Analysis">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                  <button class="action-icon-btn btn-download" onclick="downloadReport('${rep.id}')" title="Download ASCII Text Report">
+                    <i class="bi bi-download"></i>
+                  </button>
+                  <button class="action-icon-btn btn-delete" onclick="deleteReport('${rep.id}')" title="Permanently Delete Report">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              </td>
+            `;
+
+            tbody.appendChild(tr);
+          }
+        });
+
+        // Handle Table Empty State alert visibility
+        const alertEl = document.getElementById('no-reports-alert');
+        if (visibleCount === 0) {
+          alertEl.classList.remove('d-none');
+        } else {
+          alertEl.classList.add('d-none');
+        }
+      }
+
+      function renderAll() {
+        renderTable();
+        renderCharts();
+      }
+
+      // Controller Actions
+      // 1. View Report
+      window.viewReport = function(id) {
+        const report = reportsData.find(r => r.id === id);
+        if (!report) return;
+
+        const initials = report.patientName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+        document.getElementById('viewReportInitials').textContent = initials;
+        document.getElementById('viewReportPatientName').textContent = report.patientName;
+        document.getElementById('viewReportId').textContent = report.id;
+        document.getElementById('viewReportIdTitle').textContent = report.id;
+        document.getElementById('viewReportPatientId').textContent = report.patientId;
+        document.getElementById('viewReportDoctor').textContent = report.doctorName;
+        document.getElementById('viewReportTestType').textContent = report.testType;
+        document.getElementById('viewReportDate').textContent = report.date === 'Pending' ? 'Pending (In Queue)' : report.date;
+        document.getElementById('viewReportSummary').textContent = report.resultSummary;
+        document.getElementById('viewReportNotes').textContent = report.doctorNote || "No clinical path comments logged.";
+
+        const criticalBadge = document.getElementById('viewReportCriticalBadge');
+        if (report.criticalFlag && report.criticalFlag !== '—') {
+          criticalBadge.className = 'badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1 text-xs rounded';
+          criticalBadge.textContent = report.criticalFlag;
+          criticalBadge.style.display = 'inline-block';
+        } else {
+          criticalBadge.style.display = 'none';
+        }
+
+        const statusBadge = document.getElementById('viewReportStatusBadge');
+        let statusBadgeClass = "badge-pending";
+        if (report.status === "Completed") statusBadgeClass = "badge-ready";
+        if (report.status === "Pending") statusBadgeClass = "badge-processing";
+        statusBadge.className = `badge-custom ${statusBadgeClass}`;
+        statusBadge.textContent = report.status;
+
+        // Print/Download action attachment
+        const printBtn = document.getElementById('btn-modal-print');
+        printBtn.onclick = function() {
+          downloadReport(report.id);
+        };
+
+        const previewModal = new bootstrap.Modal(document.getElementById('reportPreviewModal'));
+        previewModal.show();
+      };
+
+      // 2. Download clinical ASCII report file
+      window.downloadReport = function(id) {
+        const report = reportsData.find(r => r.id === id);
+        if (!report) return;
+
+        const content = `==================================================
+              MEDISCAN DIAGNOSTIC LABS
+              CLINICAL TEST REPORT
+==================================================
+Report Reference : ${report.id}
+Date Released    : ${report.date === 'Pending' ? 'Pending (In Queue)' : report.date}
+Status           : ${report.status.toUpperCase()}
+Critical Level   : ${report.criticalFlag || 'Normal'}
+--------------------------------------------------
+PATIENT DEMOGRAPHICS
+--------------------------------------------------
+Patient Name     : ${report.patientName}
+Patient Identifier: ${report.patientId}
+--------------------------------------------------
+DIAGNOSTIC ORDER
+--------------------------------------------------
+Diagnostic Test  : ${report.testType}
+Authorized By    : ${report.doctorName}
+--------------------------------------------------
+RESULT METRICS & ANALYSIS SUMMARY
+--------------------------------------------------
+${report.resultSummary}
+
+--------------------------------------------------
+AUTHORIZED CLINICIAN COMMENTS
+--------------------------------------------------
+${report.doctorNote}
+
+--------------------------------------------------
+Digitally Authenticated & Released by:
+MediScan Pathology Laboratory Division
+==================================================`;
+
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${report.id}_${report.patientName.replace(/\s+/g, '_')}_Report.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        showToast("Report Exported", `Successfully downloaded clinical report file for ${report.patientName}.`);
+      };
+
+      // 3. Delete Report
+      window.deleteReport = function(id) {
+        const report = reportsData.find(r => r.id === id);
+        if (!report) return;
+
+        if (confirm(`Are you sure you want to permanently delete report ${id} for ${report.patientName}?`)) {
+          reportsData = reportsData.filter(r => r.id !== id);
+          saveReports();
+          renderAll();
+          showToast("Report Deleted", `Successfully removed the diagnostic report archive for ${report.patientName}.`);
+        }
+      };
+
+      // Hook up UI listeners
+      document.addEventListener('DOMContentLoaded', () => {
+        loadReports();
+        renderAll();
+
+        // 1. Sync Filters
+        document.getElementById('report-search-input').addEventListener('keyup', renderTable);
+        document.getElementById('filter-test-type').addEventListener('change', renderTable);
+        document.getElementById('filter-status').addEventListener('change', renderTable);
+
+        // Synchronize our filter search with top search
+        const topSearch = document.getElementById('search-patient');
+        const localSearch = document.getElementById('report-search-input');
+        if (topSearch && localSearch) {
+          topSearch.addEventListener('keyup', (e) => {
+            localSearch.value = e.target.value;
+            renderTable();
+          });
+          localSearch.addEventListener('keyup', (e) => {
+            topSearch.value = e.target.value;
+            renderTable();
+          });
+        }
+
+        // 2. Custom Type selection handler
+        document.getElementById('addTestType').addEventListener('change', function(e) {
+          const customWrapper = document.getElementById('customTestTypeWrapper');
+          if (e.target.value === 'Other') {
+            customWrapper.style.display = 'block';
+            document.getElementById('addTestTypeCustom').setAttribute('required', 'true');
+          } else {
+            customWrapper.style.display = 'none';
+            document.getElementById('addTestTypeCustom').removeAttribute('required');
+          }
+        });
+
+        // 3. Save new report form submission
+        const addForm = document.getElementById('add-report-form');
+        addForm.addEventListener('submit', function (e) {
+          e.preventDefault();
+          if (!addForm.checkValidity()) {
+            e.stopPropagation();
+            addForm.classList.add('was-validated');
+            return;
+          }
+
+          const patientName = document.getElementById('addPatientName').value;
+          const testTypeSelect = document.getElementById('addTestType').value;
+          const testTypeCustom = document.getElementById('addTestTypeCustom').value;
+          const testType = testTypeSelect === 'Other' ? testTypeCustom : testTypeSelect;
+          const doctorName = document.getElementById('addDoctor').value;
+          const dateVal = document.getElementById('addDate').value;
+          const status = document.getElementById('addStatus').value;
+          const criticalFlag = document.getElementById('addCriticalFlag').value || '—';
+          const resultSummary = document.getElementById('addResultSummary').value;
+          const doctorNote = document.getElementById('addDoctorNote').value;
+
+          // Format date input beautifully: YYYY-MM-DD -> DD-MMM-YYYY
+          let dateStr = 'Pending';
+          if (status !== 'Pending' && dateVal) {
+            const parts = dateVal.split('-');
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            if (parts.length === 3) {
+              dateStr = `${parts[2]}-${months[parseInt(parts[1]) - 1]}-${parts[0]}`;
+            }
+          }
+
+          // Generate next ID
+          let nextNum = 1001;
+          if (reportsData.length > 0) {
+            const ids = reportsData.map(r => parseInt(r.id.split('-')[1])).filter(num => !isNaN(num));
+            if (ids.length > 0) {
+              nextNum = Math.max(...ids) + 1;
+            }
+          }
+          const newId = `REP-${nextNum}`;
+
+          const newReport = {
+            id: newId,
+            patientName: patientName,
+            patientId: "#4" + Math.floor(10000 + Math.random() * 90000),
+            testType: testType,
+            date: dateStr,
+            status: status,
+            criticalFlag: criticalFlag,
+            resultSummary: resultSummary,
+            doctorNote: doctorNote,
+            doctorName: doctorName
+          };
+
+          reportsData.push(newReport);
+          saveReports();
+          renderAll();
+
+          // Close modal
+          const modalEl = document.getElementById('addReportModal');
+          const modalInst = bootstrap.Modal.getInstance(modalEl);
+          if (modalInst) modalInst.hide();
+          addForm.reset();
+          addForm.classList.remove('was-validated');
+          document.getElementById('customTestTypeWrapper').style.display = 'none';
+
+          showToast("Report Added", `Successfully logged new diagnostic test report slot for ${patientName}.`);
+        });
+
+        // 4. MutationObserver for Theme changes (to sync Chart.js theme variables automatically)
+        const themeObserver = new MutationObserver((mutations) => {
+          mutations.forEach((mutation) => {
+            if (mutation.attributeName === 'data-theme') {
+              renderCharts();
+            }
+          });
+        });
+        themeObserver.observe(document.documentElement, { attributes: true });
+      });
+    </script>
+  </body>
+</html>

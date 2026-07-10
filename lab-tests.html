@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MediScan - Lab Tests Catalog</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- AOS CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+    <!-- Custom Style -->
+    <link href="/css/style.css" rel="stylesheet" />
+  </head>
+  <body>
+
+    <!-- Sidebar Layout -->
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon">
+          <i class="bi bi-activity"></i>
+        </div>
+        <span class="brand-name">MediScan</span>
+      </div>
+
+      <nav class="sidebar-menu">
+        <ul class="sidebar-menu-list">
+          <li class="sidebar-item">
+            <a href="index.html" class="sidebar-link">
+              <i class="bi bi-grid-1x2-fill"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="sidebar-item">
+            <a href="patients.html" class="sidebar-link">
+              <i class="bi bi-people"></i>
+              <span>Patients</span>
+            </a>
+          </li>
+          <li class="sidebar-item">
+            <a href="doctors.html" class="sidebar-link">
+              <i class="bi bi-heart-pulse"></i>
+              <span>Doctors</span>
+            </a>
+          </li>
+          <li class="sidebar-item">
+            <a href="appointments.html" class="sidebar-link">
+              <i class="bi bi-calendar-event"></i>
+              <span>Appointments</span>
+            </a>
+          </li>
+          <li class="sidebar-item">
+            <a href="reports.html" class="sidebar-link">
+              <i class="bi bi-journal-text"></i>
+              <span>Lab Reports</span>
+            </a>
+          </li>
+          <li class="sidebar-item">
+            <a href="lab-tests.html" class="sidebar-link active">
+              <i class="bi bi-clipboard2-pulse-fill"></i>
+              <span>Lab Tests</span>
+            </a>
+          </li>
+          <li class="sidebar-item">
+            <a href="billing.html" class="sidebar-link">
+              <i class="bi bi-credit-card"></i>
+              <span>Billing</span>
+            </a>
+          </li>
+          <li class="sidebar-item">
+            <a href="settings.html" class="sidebar-link">
+              <i class="bi bi-gear"></i>
+              <span>Settings</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-badge">
+          <div class="user-badge-avatar">SJ</div>
+          <div class="user-badge-info">
+            <span class="user-badge-name">Sarah Jenkins</span>
+            <span class="user-badge-role">MD, Pathologist</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Top Navbar -->
+      <header class="top-navbar">
+        <div class="navbar-left">
+          <button id="sidebar-toggle" class="sidebar-toggle-btn">
+            <i class="bi bi-list"></i>
+          </button>
+          <div class="search-wrapper">
+            <i class="bi bi-search"></i>
+            <input type="text" id="search-patient" class="search-input" placeholder="Search lab test catalogue..." />
+          </div>
+        </div>
+
+        <div class="navbar-actions">
+          <!-- Day/Night Toggle Switch -->
+          <div class="theme-switch-container">
+            <button id="btn-theme-light" class="theme-switch-btn active">
+              <i class="bi bi-sun-fill"></i> Day
+            </button>
+            <button id="btn-theme-dark" class="theme-switch-btn">
+              <i class="bi bi-moon-fill"></i> Night
+            </button>
+          </div>
+
+          <!-- Notification Dropdown -->
+          <div class="dropdown">
+            <button class="navbar-action-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="bi bi-bell"></i>
+              <span class="badge-dot"></span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-custom p-2 mt-2" style="width: 280px;">
+              <li class="px-3 py-2 border-bottom var(--border-color) d-flex justify-content-between align-items-center">
+                <span class="fw-bold text-primary">Notifications</span>
+                <span class="badge bg-danger rounded-pill">3 New</span>
+              </li>
+              <li><a class="dropdown-item dropdown-item-custom py-2" href="reports.html">
+                <div class="d-flex flex-column">
+                  <span class="fw-semibold">Abnormal Blood Test #4829</span>
+                  <span class="text-xs text-muted">2 mins ago</span>
+                </div>
+              </a></li>
+              <li><a class="dropdown-item dropdown-item-custom py-2" href="appointments.html">
+                <div class="d-flex flex-column">
+                  <span class="fw-semibold">New Appointment: Arjun Mahat</span>
+                  <span class="text-xs text-muted">1 hour ago</span>
+                </div>
+              </a></li>
+              <li><a class="dropdown-item dropdown-item-custom py-2" href="settings.html">
+                <div class="d-flex flex-column">
+                  <span class="fw-semibold">Sysmex Calibration Finished</span>
+                  <span class="text-xs text-muted">Yesterday</span>
+                </div>
+              </a></li>
+            </ul>
+          </div>
+
+          <!-- User Profile Dropdown -->
+          <div class="dropdown">
+            <button class="profile-dropdown-trigger" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <div class="profile-avatar">SJ</div>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-custom p-2 mt-2">
+              <li class="px-3 py-2">
+                <p class="mb-0 fw-bold">Dr. Sarah Jenkins</p>
+                <p class="mb-0 text-muted small">sjenkins@mediscan.com</p>
+              </li>
+              <li class="dropdown-divider-custom"></li>
+              <li><a class="dropdown-item dropdown-item-custom" href="settings.html"><i class="bi bi-person me-2"></i>My Profile</a></li>
+              <li><a class="dropdown-item dropdown-item-custom" href="settings.html"><i class="bi bi-gear me-2"></i>Account Settings</a></li>
+              <li class="dropdown-divider-custom"></li>
+              <li><a class="dropdown-item dropdown-item-custom text-danger" href="login.html"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+
+      <!-- Page Content -->
+      <div class="page-container">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4" data-aos="fade-down">
+          <div>
+            <h1 class="h3 fw-bold mb-1">Diagnostic Lab Tests Directory</h1>
+            <p class="text-muted mb-0">Check pricing, specimen guidelines, processing times, and laboratory codes.</p>
+          </div>
+        </div>
+
+        <!-- Testing Categories Grid -->
+        <div class="row">
+          <div class="col-12" data-aos="fade-up">
+            <div class="card-custom">
+              <div class="table-responsive">
+                <table class="table table-custom table-searchable align-middle">
+                  <thead>
+                    <tr>
+                      <th>Test Name / Code</th>
+                      <th>Category</th>
+                      <th>Specimen / Sample</th>
+                      <th>Processing Duration</th>
+                      <th>Diagnostic Cost</th>
+                      <th>Assigned Machinery</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <span class="fw-bold text-primary">Complete Blood Count (CBC)</span>
+                        <div class="text-xs text-muted">Code: DX-CBC-01</div>
+                      </td>
+                      <td>Hematology</td>
+                      <td>Whole Blood (EDTA)</td>
+                      <td><span class="fw-medium">2 Hours</span></td>
+                      <td><strong class="text-teal">$45.00</strong></td>
+                      <td>Sysmex XN-1000</td>
+                      <td><span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1 text-xs font-semibold">Active</span></td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <span class="fw-bold text-primary">Cardiac Troponin T Assay</span>
+                        <div class="text-xs text-muted">Code: DX-TROP-09</div>
+                      </td>
+                      <td>Cardiology / Biochemistry</td>
+                      <td>Serum (Gel Tube)</td>
+                      <td><span class="fw-medium">4 Hours</span></td>
+                      <td><strong class="text-teal">$120.00</strong></td>
+                      <td>Cobas 6000 Analyzer</td>
+                      <td><span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1 text-xs font-semibold">Active</span></td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <span class="fw-bold text-primary">MRI Lumbar Spine (Non-Contrast)</span>
+                        <div class="text-xs text-muted">Code: DX-MRI-12</div>
+                      </td>
+                      <td>Radiology / Imaging</td>
+                      <td>In-Patient Scan</td>
+                      <td><span class="fw-medium">24 Hours</span></td>
+                      <td><strong class="text-teal">$380.00</strong></td>
+                      <td>MRI Scanner 02</td>
+                      <td><span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-3 py-1 text-xs font-semibold">Maintenance</span></td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <span class="fw-bold text-primary">Thyroid Panel (TSH, FT3, FT4)</span>
+                        <div class="text-xs text-muted">Code: DX-THY-22</div>
+                      </td>
+                      <td>Endocrinology / Immunology</td>
+                      <td>Serum (Gel Tube)</td>
+                      <td><span class="fw-medium">6 Hours</span></td>
+                      <td><strong class="text-teal">$75.00</strong></td>
+                      <td>Cobas 6000 Analyzer</td>
+                      <td><span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1 text-xs font-semibold">Active</span></td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <span class="fw-bold text-primary">Lipid Profile Screen</span>
+                        <div class="text-xs text-muted">Code: DX-LIP-05</div>
+                      </td>
+                      <td>Biochemistry</td>
+                      <td>Serum (Fasting blood)</td>
+                      <td><span class="fw-medium">3 Hours</span></td>
+                      <td><strong class="text-teal">$55.00</strong></td>
+                      <td>Cobas 6000 Analyzer</td>
+                      <td><span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1 text-xs font-semibold">Active</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- AOS JS -->
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+    <!-- Custom JS -->
+    <script type="module" src="/js/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,1036 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MediScan - Appointments Manager</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- AOS CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+    <!-- Custom Style -->
+    <link href="/css/style.css" rel="stylesheet" />
+    <style>
+      /* Page-specific customized styles to guarantee premium visual design */
+      .calendar-day-btn {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: transparent;
+        border-radius: 50%;
+        color: var(--text-primary);
+        font-weight: 500;
+        cursor: pointer;
+        position: relative;
+        transition: all 0.2s ease;
+        margin: auto;
+      }
+      .calendar-day-btn:hover {
+        background-color: var(--nav-hover);
+        color: var(--accent-color);
+      }
+      .calendar-day-btn.empty {
+        cursor: default;
+        pointer-events: none;
+        opacity: 0.25;
+      }
+      .calendar-day-btn.has-appointment::after {
+        content: '';
+        position: absolute;
+        bottom: 3px;
+        width: 4px;
+        height: 4px;
+        background-color: var(--accent-color);
+        border-radius: 50%;
+      }
+      .calendar-day-btn.selected {
+        background-color: var(--accent-color) !important;
+        color: #ffffff !important;
+      }
+      .calendar-day-btn.selected::after {
+        background-color: #ffffff !important;
+      }
+      
+      /* Action Buttons styling */
+      .action-icon-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--border-color);
+        background-color: var(--bg-card);
+        color: var(--text-secondary);
+        transition: all 0.2s ease;
+        cursor: pointer;
+      }
+      .action-icon-btn:hover {
+        background-color: var(--accent-color);
+        color: #ffffff;
+        border-color: var(--accent-color);
+        transform: translateY(-1px);
+      }
+      .action-icon-btn.btn-cancel:hover {
+        background-color: #ef4444;
+        border-color: #ef4444;
+        color: #ffffff;
+      }
+      
+      /* Toast styling */
+      .custom-toast {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        z-index: 1060;
+        background-color: var(--bg-card);
+        border: 1px solid var(--border-color);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        border-radius: 12px;
+        min-width: 300px;
+        display: none;
+        animation: slideUp 0.3s ease-out;
+      }
+      @keyframes slideUp {
+        from { transform: translateY(100px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+      }
+    </style>
+  </head>
+  <body>
+
+    <!-- Sidebar Layout -->
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon">
+          <i class="bi bi-activity"></i>
+        </div>
+        <span class="brand-name">MediScan</span>
+      </div>
+
+      <nav class="sidebar-menu">
+        <ul class="sidebar-menu-list">
+          <li class="sidebar-item">
+            <a href="index.html" class="sidebar-link">
+              <i class="bi bi-grid-1x2-fill"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="sidebar-item">
+            <a href="patients.html" class="sidebar-link">
+              <i class="bi bi-people"></i>
+              <span>Patients</span>
+            </a>
+          </li>
+          <li class="sidebar-item">
+            <a href="doctors.html" class="sidebar-link">
+              <i class="bi bi-heart-pulse"></i>
+              <span>Doctors</span>
+            </a>
+          </li>
+          <li class="sidebar-item">
+            <a href="appointments.html" class="sidebar-link active">
+              <i class="bi bi-calendar-event-fill"></i>
+              <span>Appointments</span>
+            </a>
+          </li>
+          <li class="sidebar-item">
+            <a href="reports.html" class="sidebar-link">
+              <i class="bi bi-journal-text"></i>
+              <span>Lab Reports</span>
+            </a>
+          </li>
+          <li class="sidebar-item">
+            <a href="lab-tests.html" class="sidebar-link">
+              <i class="bi bi-clipboard2-pulse"></i>
+              <span>Lab Tests</span>
+            </a>
+          </li>
+          <li class="sidebar-item">
+            <a href="billing.html" class="sidebar-link">
+              <i class="bi bi-credit-card"></i>
+              <span>Billing</span>
+            </a>
+          </li>
+          <li class="sidebar-item">
+            <a href="settings.html" class="sidebar-link">
+              <i class="bi bi-gear"></i>
+              <span>Settings</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-badge">
+          <div class="user-badge-avatar">SJ</div>
+          <div class="user-badge-info">
+            <span class="user-badge-name">Sarah Jenkins</span>
+            <span class="user-badge-role">MD, Pathologist</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Top Navbar -->
+      <header class="top-navbar">
+        <div class="navbar-left">
+          <button id="sidebar-toggle" class="sidebar-toggle-btn">
+            <i class="bi bi-list"></i>
+          </button>
+          <div class="search-wrapper">
+            <i class="bi bi-search"></i>
+            <input type="text" id="search-patient" class="search-input" placeholder="Search diagnostic schedules..." />
+          </div>
+        </div>
+
+        <div class="navbar-actions">
+          <!-- Day/Night Toggle Switch -->
+          <div class="theme-switch-container">
+            <button id="btn-theme-light" class="theme-switch-btn active">
+              <i class="bi bi-sun-fill"></i> Day
+            </button>
+            <button id="btn-theme-dark" class="theme-switch-btn">
+              <i class="bi bi-moon-fill"></i> Night
+            </button>
+          </div>
+
+          <!-- Notification Dropdown -->
+          <div class="dropdown">
+            <button class="navbar-action-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="bi bi-bell"></i>
+              <span class="badge-dot"></span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-custom p-2 mt-2" style="width: 280px;">
+              <li class="px-3 py-2 border-bottom var(--border-color) d-flex justify-content-between align-items-center">
+                <span class="fw-bold text-primary">Notifications</span>
+                <span class="badge bg-danger rounded-pill">3 New</span>
+              </li>
+              <li><a class="dropdown-item dropdown-item-custom py-2" href="reports.html">
+                <div class="d-flex flex-column">
+                  <span class="fw-semibold">Abnormal Blood Test #4829</span>
+                  <span class="text-xs text-muted">2 mins ago</span>
+                </div>
+              </a></li>
+              <li><a class="dropdown-item dropdown-item-custom py-2" href="appointments.html">
+                <div class="d-flex flex-column">
+                  <span class="fw-semibold">New Appointment: Arjun Mahat</span>
+                  <span class="text-xs text-muted">1 hour ago</span>
+                </div>
+              </a></li>
+              <li><a class="dropdown-item dropdown-item-custom py-2" href="settings.html">
+                <div class="d-flex flex-column">
+                  <span class="fw-semibold">Sysmex Calibration Finished</span>
+                  <span class="text-xs text-muted">Yesterday</span>
+                </div>
+              </a></li>
+            </ul>
+          </div>
+
+          <!-- User Profile Dropdown -->
+          <div class="dropdown">
+            <button class="profile-dropdown-trigger" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <div class="profile-avatar">SJ</div>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-custom p-2 mt-2">
+              <li class="px-3 py-2">
+                <p class="mb-0 fw-bold">Dr. Sarah Jenkins</p>
+                <p class="mb-0 text-muted small">sjenkins@mediscan.com</p>
+              </li>
+              <li class="dropdown-divider-custom"></li>
+              <li><a class="dropdown-item dropdown-item-custom" href="settings.html"><i class="bi bi-person me-2"></i>My Profile</a></li>
+              <li><a class="dropdown-item dropdown-item-custom" href="settings.html"><i class="bi bi-gear me-2"></i>Account Settings</a></li>
+              <li class="dropdown-divider-custom"></li>
+              <li><a class="dropdown-item dropdown-item-custom text-danger" href="login.html"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+
+      <!-- Page Content Container -->
+      <div class="page-container">
+        <!-- Breadcrumbs & Heading -->
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3 mb-4" data-aos="fade-down">
+          <div>
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb mb-1 text-xs">
+                <li class="breadcrumb-item"><a href="index.html" class="text-decoration-none text-muted">Dashboard</a></li>
+                <li class="breadcrumb-item active text-primary" aria-current="page">Appointments</li>
+              </ol>
+            </nav>
+            <h1 class="h3 fw-bold mb-1">Appointments Manager</h1>
+            <p class="text-muted mb-0 text-sm">Schedule outpatient visits, book diagnostic checkups, and configure laboratory timetables.</p>
+          </div>
+          <button class="btn btn-accent d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#bookAppointmentModal">
+            <i class="bi bi-calendar-plus"></i> Book Appointment
+          </button>
+        </div>
+
+        <!-- Filter & Search Panel -->
+        <div class="card-custom mb-4 p-3" data-aos="fade-up">
+          <div class="row g-3">
+            <div class="col-12 col-md-4">
+              <label class="form-label form-label-custom mb-1 text-xs">Search Patient or Clinician</label>
+              <div class="input-group">
+                <span class="input-group-text bg-transparent border-end-0 var(--border-color)"><i class="bi bi-search text-muted"></i></span>
+                <input type="text" id="search-filter" class="form-control form-control-custom border-start-0" placeholder="Search by name or ID..." />
+              </div>
+            </div>
+            <div class="col-12 col-sm-6 col-md-4">
+              <label class="form-label form-label-custom mb-1 text-xs">Appointment Date</label>
+              <input type="date" id="date-filter" class="form-control form-control-custom" />
+            </div>
+            <div class="col-12 col-sm-6 col-md-4">
+              <label class="form-label form-label-custom mb-1 text-xs">Status State</label>
+              <select class="form-select form-select-custom" id="status-filter">
+                <option value="All">All Statuses</option>
+                <option value="Pending">Pending</option>
+                <option value="Confirmed">Confirmed</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Layout Rows -->
+        <div class="row">
+          <!-- Left Column: Appointments Table -->
+          <div class="col-12 col-lg-8 col-xl-9" data-aos="fade-up" data-aos-delay="50">
+            <div class="card-custom p-0 overflow-hidden">
+              <div class="table-responsive">
+                <table class="table table-custom align-middle text-nowrap" id="appointments-table">
+                  <thead>
+                    <tr>
+                      <th class="ps-4">ID</th>
+                      <th>Patient</th>
+                      <th>Doctor</th>
+                      <th>Date &amp; Time</th>
+                      <th>Type</th>
+                      <th>Status</th>
+                      <th class="pe-4 text-end">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="appointments-tbody">
+                    <!-- Dynamic Rows Populated here -->
+                  </tbody>
+                </table>
+              </div>
+              
+              <!-- Empty State Alert -->
+              <div id="no-appointments-alert" class="p-5 text-center d-none">
+                <i class="bi bi-calendar-x text-muted h1 d-block mb-3"></i>
+                <h5 class="fw-bold">No Appointments Found</h5>
+                <p class="text-muted text-xs mb-0">No records match your filters. Try clearing search fields or picking a different date.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Mini Calendar Sidebar -->
+          <div class="col-12 col-lg-4 col-xl-3" data-aos="fade-left" data-aos-delay="100">
+            <div class="card-custom p-3">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold text-primary mb-0 text-sm">
+                  <i class="bi bi-calendar3 me-2"></i>Schedule Board
+                </h5>
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle text-xs py-1 px-2 font-monospace">July 2026</span>
+              </div>
+              
+              <!-- Calendar Grid Header -->
+              <div class="row text-center g-1 mb-2 text-muted fw-semibold" style="font-size: 11px;">
+                <div class="col">Su</div>
+                <div class="col">Mo</div>
+                <div class="col">Tu</div>
+                <div class="col">We</div>
+                <div class="col">Th</div>
+                <div class="col">Fr</div>
+                <div class="col">Sa</div>
+              </div>
+              
+              <!-- Calendar Days Grid (July 2026) -->
+              <div class="row g-1 text-center" id="calendar-days-grid">
+                <!-- Populated dynamically via JS -->
+              </div>
+              
+              <div class="mt-3 pt-2 border-top var(--border-color) d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-1">
+                  <span class="d-inline-block bg-teal rounded-circle" style="width: 8px; height: 8px; background-color: var(--accent-color);"></span>
+                  <span class="text-xs text-muted">Booked Day</span>
+                </div>
+                <button class="btn btn-link text-xs p-0 text-decoration-none text-teal fw-semibold d-none" id="btn-clear-date-filter">
+                  <i class="bi bi-x-circle me-1"></i>Reset Date
+                </button>
+              </div>
+            </div>
+
+            <!-- Pathologist Instructions Note Card -->
+            <div class="card-custom border border-info-subtle mt-4" style="background-color: var(--table-header);">
+              <h6 class="fw-bold text-info-emphasis text-xs uppercase mb-2"><i class="bi bi-info-circle me-1"></i> Patient Care Guidelines</h6>
+              <p class="text-muted text-xs mb-0 leading-relaxed">Appointments marked as "Test" require clinical lab suite assignments. Confirmed slots automatically populate on pathologists' dashboards.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- BOOK APPOINTMENT MODAL -->
+    <div class="modal fade" id="bookAppointmentModal" tabindex="-1" aria-labelledby="bookAppointmentModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content card-custom p-0 border-0 overflow-hidden">
+          <div class="modal-header border-bottom var(--border-color) px-4 py-3" style="background-color: var(--table-header);">
+            <h5 class="modal-title fw-bold text-primary" id="bookAppointmentModalLabel">Book Diagnostic Slot</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <form id="book-appointment-form" class="needs-validation" novalidate>
+            <div class="modal-body p-4">
+              <div class="mb-3">
+                <label for="addPatientName" class="form-label form-label-custom">Patient Full Name <span class="text-danger">*</span></label>
+                <input type="text" class="form-control form-control-custom" id="addPatientName" placeholder="e.g. Arjun Mahat" required />
+                <div class="invalid-feedback text-xs">Patient Name is required.</div>
+              </div>
+              <div class="mb-3">
+                <label for="addDoctor" class="form-label form-label-custom">Assigned Clinician <span class="text-danger">*</span></label>
+                <select class="form-select form-select-custom" id="addDoctor" required>
+                  <option value="" disabled selected>Select Physician</option>
+                  <option value="Dr. Sarah Jenkins">Dr. Sarah Jenkins (Pathology)</option>
+                  <option value="Dr. Robert K.">Dr. Robert K. (Endocrinology)</option>
+                  <option value="Dr. Alan Grant">Dr. Alan Grant (Radiology)</option>
+                  <option value="Dr. Elena Rostova">Dr. Elena Rostova (Cardiology)</option>
+                </select>
+                <div class="invalid-feedback text-xs">Please select a clinician.</div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-6">
+                  <label for="addDate" class="form-label form-label-custom">Appointment Date <span class="text-danger">*</span></label>
+                  <input type="date" class="form-control form-control-custom" id="addDate" min="2026-07-01" max="2026-07-31" required />
+                  <div class="invalid-feedback text-xs">Please select a date in July 2026.</div>
+                </div>
+                <div class="col-6">
+                  <label for="addTime" class="form-label form-label-custom">Time Slot <span class="text-danger">*</span></label>
+                  <input type="time" class="form-control form-control-custom" id="addTime" required />
+                  <div class="invalid-feedback text-xs">Time slot is required.</div>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="addType" class="form-label form-label-custom">Appointment Type <span class="text-danger">*</span></label>
+                <select class="form-select form-select-custom" id="addType" required>
+                  <option value="Test" selected>Diagnostic Test (Blood draw, MRI, etc.)</option>
+                  <option value="Checkup">Clinical Checkup / Consultation</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="addNotes" class="form-label form-label-custom">Clinical Notes / Pre-requisites</label>
+                <textarea class="form-control form-control-custom" id="addNotes" rows="3" placeholder="e.g. Fasting guidelines or symptoms..."></textarea>
+              </div>
+            </div>
+            <div class="modal-footer border-top var(--border-color) p-3">
+              <button type="button" class="btn btn-outline-custom" data-bs-dismiss="modal">Cancel</button>
+              <button type="submit" class="btn btn-accent">Save Appointment</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- EDIT APPOINTMENT MODAL -->
+    <div class="modal fade" id="editAppointmentModal" tabindex="-1" aria-labelledby="editAppointmentModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content card-custom p-0 border-0 overflow-hidden">
+          <div class="modal-header border-bottom var(--border-color) px-4 py-3" style="background-color: var(--table-header);">
+            <h5 class="modal-title fw-bold text-primary" id="editAppointmentModalLabel">Edit Scheduled Slot</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <form id="edit-appointment-form" class="needs-validation" novalidate>
+            <input type="hidden" id="editAppId" />
+            <div class="modal-body p-4">
+              <div class="mb-3">
+                <label for="editPatientName" class="form-label form-label-custom">Patient Full Name <span class="text-danger">*</span></label>
+                <input type="text" class="form-control form-control-custom" id="editPatientName" required />
+                <div class="invalid-feedback text-xs">Patient Name is required.</div>
+              </div>
+              <div class="mb-3">
+                <label for="editDoctor" class="form-label form-label-custom">Assigned Clinician <span class="text-danger">*</span></label>
+                <select class="form-select form-select-custom" id="editDoctor" required>
+                  <option value="Dr. Sarah Jenkins">Dr. Sarah Jenkins (Pathology)</option>
+                  <option value="Dr. Robert K.">Dr. Robert K. (Endocrinology)</option>
+                  <option value="Dr. Alan Grant">Dr. Alan Grant (Radiology)</option>
+                  <option value="Dr. Elena Rostova">Dr. Elena Rostova (Cardiology)</option>
+                </select>
+                <div class="invalid-feedback text-xs">Please select a clinician.</div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-6">
+                  <label for="editDate" class="form-label form-label-custom">Appointment Date <span class="text-danger">*</span></label>
+                  <input type="date" class="form-control form-control-custom" id="editDate" min="2026-07-01" max="2026-07-31" required />
+                  <div class="invalid-feedback text-xs">Please select a date in July 2026.</div>
+                </div>
+                <div class="col-6">
+                  <label for="editTime" class="form-label form-label-custom">Time Slot <span class="text-danger">*</span></label>
+                  <input type="time" class="form-control form-control-custom" id="editTime" required />
+                  <div class="invalid-feedback text-xs">Time slot is required.</div>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-6">
+                  <label for="editType" class="form-label form-label-custom">Appointment Type <span class="text-danger">*</span></label>
+                  <select class="form-select form-select-custom" id="editType" required>
+                    <option value="Test">Diagnostic Test</option>
+                    <option value="Checkup">Clinical Checkup</option>
+                  </select>
+                </div>
+                <div class="col-6">
+                  <label for="editStatus" class="form-label form-label-custom">Current Status <span class="text-danger">*</span></label>
+                  <select class="form-select form-select-custom" id="editStatus" required>
+                    <option value="Pending">Pending</option>
+                    <option value="Confirmed">Confirmed</option>
+                    <option value="Cancelled">Cancelled</option>
+                  </select>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="editNotes" class="form-label form-label-custom">Clinical Notes / Pre-requisites</label>
+                <textarea class="form-control form-control-custom" id="editNotes" rows="3"></textarea>
+              </div>
+            </div>
+            <div class="modal-footer border-top var(--border-color) p-3">
+              <button type="button" class="btn btn-outline-custom" data-bs-dismiss="modal">Cancel</button>
+              <button type="submit" class="btn btn-accent">Save Changes</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW APPOINTMENT DETAILS MODAL -->
+    <div class="modal fade" id="viewAppointmentModal" tabindex="-1" aria-labelledby="viewAppointmentModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content card-custom p-0 border-0 overflow-hidden">
+          <div class="modal-header border-bottom var(--border-color) px-4 py-3" style="background-color: var(--table-header);">
+            <h5 class="modal-title fw-bold text-primary" id="viewAppointmentModalLabel">Specialist Credentials</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body p-4">
+            <!-- Header section inside Modal -->
+            <div class="d-flex align-items-center gap-3 mb-4">
+              <div class="user-badge-avatar bg-primary-subtle text-primary fw-bold" id="viewAppInitials" style="width: 56px; height: 56px; font-size: 1.25rem;">AM</div>
+              <div>
+                <h4 class="fw-bold text-primary mb-0" id="viewAppPatientName">Arjun Mahat</h4>
+                <div class="text-xs text-muted">Appointment ID: <strong class="font-monospace text-dark" id="viewAppId">APT-1001</strong></div>
+              </div>
+            </div>
+
+            <hr class="var(--border-color) my-3" />
+
+            <!-- Core clinical stats & identifiers -->
+            <div class="row g-3">
+              <div class="col-6">
+                <span class="d-block text-xs text-muted">Assigned Doctor</span>
+                <span class="fw-semibold text-primary" id="viewAppDoctor">Dr. Sarah Jenkins</span>
+              </div>
+              <div class="col-6">
+                <span class="d-block text-xs text-muted">Appointment Type</span>
+                <span class="badge bg-light text-primary border px-2 py-1 text-xs" id="viewAppType">Test</span>
+              </div>
+              <div class="col-6">
+                <span class="d-block text-xs text-muted">Scheduled Date</span>
+                <span class="fw-semibold text-primary" id="viewAppDate">10-Jul-2026</span>
+              </div>
+              <div class="col-6">
+                <span class="d-block text-xs text-muted">Time Slot</span>
+                <span class="fw-semibold text-teal font-monospace" id="viewAppTime">09:30 AM</span>
+              </div>
+              <div class="col-12">
+                <span class="d-block text-xs text-muted">Current Status</span>
+                <span id="viewAppStatusBadge">Confirmed</span>
+              </div>
+              <div class="col-12">
+                <span class="d-block text-xs text-muted">Clinical Notes & Indications</span>
+                <div class="bg-light p-3 rounded border text-sm text-dark mt-1 leading-relaxed" id="viewAppNotes" style="white-space: pre-wrap;">
+                  Requires fasting for 12 hours prior to blood hematology draw.
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer border-top var(--border-color) p-3">
+            <button type="button" class="btn btn-outline-custom" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-accent" id="btn-edit-app-from-view"><i class="bi bi-pencil-square me-1"></i> Edit Appointment</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast-notify" class="custom-toast p-3">
+      <div class="d-flex align-items-center gap-3">
+        <div class="bg-success text-white rounded-circle d-inline-flex p-2">
+          <i class="bi bi-check-lg"></i>
+        </div>
+        <div class="flex-grow-1">
+          <strong class="text-primary d-block small" id="toast-title">Success</strong>
+          <span class="text-xs text-muted" id="toast-message">Appointments registry updated successfully.</span>
+        </div>
+        <button type="button" class="btn-close text-xs" onclick="hideToast()"></button>
+      </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- AOS JS -->
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+    <!-- Custom JS -->
+    <script type="module" src="/js/main.js"></script>
+
+    <!-- IN-MEMORY DATABASE & CONTROLLER -->
+    <script>
+      // Initial appointments database
+      const appointmentsData = {
+        "APT-1001": {
+          id: "APT-1001",
+          patientName: "Arjun Mahat",
+          patientId: "#48291",
+          doctorName: "Dr. Sarah Jenkins",
+          date: "2026-07-10",
+          time: "09:30 AM",
+          type: "Test",
+          status: "Confirmed",
+          notes: "Requires fasting for 12 hours prior to blood hematology draw."
+        },
+        "APT-1002": {
+          id: "APT-1002",
+          patientName: "Linda Blair",
+          patientId: "#48292",
+          doctorName: "Dr. Robert K.",
+          date: "2026-07-10",
+          time: "10:15 AM",
+          type: "Test",
+          status: "Pending",
+          notes: "Check thyroid levels and cardiac enzymes."
+        },
+        "APT-1003": {
+          id: "APT-1003",
+          patientName: "Robert K.",
+          patientId: "#48293",
+          doctorName: "Dr. Alan Grant",
+          date: "2026-07-11",
+          time: "11:00 AM",
+          type: "Checkup",
+          status: "Confirmed",
+          notes: "Review MRI Lumbar Spine results from radiology suite."
+        },
+        "APT-1004": {
+          id: "APT-1004",
+          patientName: "Sarah Parker",
+          patientId: "#48294",
+          doctorName: "Dr. Elena Rostova",
+          date: "2026-07-12",
+          time: "02:00 PM",
+          type: "Checkup",
+          status: "Cancelled",
+          notes: "Consultation for chronic cardiovascular evaluations."
+        },
+        "APT-1005": {
+          id: "APT-1005",
+          patientName: "Marcus Aurelius",
+          patientId: "#48295",
+          doctorName: "Dr. Elena Rostova",
+          date: "2026-07-15",
+          time: "03:30 PM",
+          type: "Checkup",
+          status: "Confirmed",
+          notes: "Routine post-op evaluation and cardiovascular checkup."
+        }
+      };
+
+      // Tracks selected day on the calendar card
+      let selectedCalendarDate = "";
+
+      // Toast Notification helper
+      function showToast(title, message) {
+        document.getElementById('toast-title').textContent = title;
+        document.getElementById('toast-message').textContent = message;
+        const toast = document.getElementById('toast-notify');
+        toast.style.display = 'block';
+        setTimeout(() => {
+          hideToast();
+        }, 4000);
+      }
+
+      function hideToast() {
+        const toast = document.getElementById('toast-notify');
+        if (toast) toast.style.display = 'none';
+      }
+
+      // Format YYYY-MM-DD to DD-MMM-YYYY (e.g. 10-Jul-2026)
+      function formatDateNice(dateStr) {
+        if (!dateStr) return '';
+        const parts = dateStr.split('-');
+        if (parts.length !== 3) return dateStr;
+        const year = parts[0];
+        const monthIndex = parseInt(parts[1]) - 1;
+        const day = parts[2];
+        
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        if (monthIndex < 0 || monthIndex > 11) return dateStr;
+        return `${day}-${months[monthIndex]}-${year}`;
+      }
+
+      // Convert 24h string "14:30" to 12h string "02:30 PM"
+      function formatTime12h(timeStr) {
+        if (!timeStr) return '';
+        if (timeStr.includes('AM') || timeStr.includes('PM')) {
+          return timeStr;
+        }
+        let [hours, minutes] = timeStr.split(':');
+        hours = parseInt(hours);
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12;
+        hours = hours ? hours : 12;
+        return `${hours.toString().padStart(2, '0')}:${minutes} ${ampm}`;
+      }
+
+      // Convert 12h string "02:30 PM" to 24h string "14:30"
+      function parseTimeTo24h(time12h) {
+        if (!time12h) return '';
+        const match = time12h.match(/^(\d+):(\d+)\s*(AM|PM)$/i);
+        if (!match) return '';
+        let hours = parseInt(match[1]);
+        const minutes = match[2];
+        const ampm = match[3].toUpperCase();
+        if (ampm === 'PM' && hours < 12) hours += 12;
+        if (ampm === 'AM' && hours === 12) hours = 0;
+        return `${hours.toString().padStart(2, '0')}:${minutes}`;
+      }
+
+      // Render appointments table and mini calendar
+      function renderAll() {
+        const tbody = document.getElementById('appointments-tbody');
+        if (!tbody) return;
+
+        tbody.innerHTML = '';
+
+        const searchQuery = document.getElementById('search-filter').value.toLowerCase();
+        const dateQuery = document.getElementById('date-filter').value;
+        const statusQuery = document.getElementById('status-filter').value;
+
+        let visibleCount = 0;
+
+        Object.values(appointmentsData).forEach(app => {
+          // Check filters
+          const matchesSearch = app.patientName.toLowerCase().includes(searchQuery) || 
+                                app.doctorName.toLowerCase().includes(searchQuery) || 
+                                app.id.toLowerCase().includes(searchQuery);
+          
+          const matchesDate = !dateQuery || app.date === dateQuery;
+          const matchesStatus = statusQuery === 'All' || app.status === statusQuery;
+          const matchesCalendar = !selectedCalendarDate || app.date === selectedCalendarDate;
+
+          if (matchesSearch && matchesDate && matchesStatus && matchesCalendar) {
+            visibleCount++;
+
+            let statusBadgeClass = "badge-pending";
+            if (app.status === "Confirmed") statusBadgeClass = "badge-ready";
+            if (app.status === "Cancelled") statusBadgeClass = "badge-cancelled";
+
+            const initials = app.patientName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td class="ps-4 font-monospace fw-semibold text-primary">${app.id}</td>
+              <td>
+                <div class="d-flex align-items-center gap-3">
+                  <div class="user-badge-avatar bg-light text-dark fw-bold" style="width: 32px; height: 32px; font-size: 11px;">${initials}</div>
+                  <div>
+                    <span class="fw-semibold d-block text-sm">${app.patientName}</span>
+                    <span class="text-xs text-muted">ID: ${app.patientId}</span>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="fw-medium">${app.doctorName}</span>
+              </td>
+              <td>
+                <span class="fw-medium d-block text-sm">${formatDateNice(app.date)}</span>
+                <span class="text-teal font-monospace text-xs">${app.time}</span>
+              </td>
+              <td>
+                <span class="badge bg-light text-secondary border px-2 py-1 text-xs" style="font-weight: 500;">${app.type}</span>
+              </td>
+              <td>
+                <span class="badge-custom ${statusBadgeClass}">${app.status}</span>
+              </td>
+              <td class="pe-4 text-end">
+                <div class="d-flex justify-content-end gap-2">
+                  <button class="action-icon-btn" onclick="viewAppointment('${app.id}')" title="View details">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                  <button class="action-icon-btn" onclick="editAppointment('${app.id}')" title="Edit schedule">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <button class="action-icon-btn btn-cancel" onclick="cancelAppointment('${app.id}')" title="Cancel appointment" ${app.status === 'Cancelled' ? 'disabled style="opacity:0.4; cursor:default;"' : ''}>
+                    <i class="bi bi-x-circle"></i>
+                  </button>
+                </div>
+              </td>
+            `;
+
+            tbody.appendChild(tr);
+          }
+        });
+
+        // Toggle empty state alert
+        const alertEl = document.getElementById('no-appointments-alert');
+        if (visibleCount === 0) {
+          alertEl.classList.remove('d-none');
+        } else {
+          alertEl.classList.add('d-none');
+        }
+
+        renderCalendarGrid();
+      }
+
+      // Render the July 2026 calendar board grid
+      function renderCalendarGrid() {
+        const grid = document.getElementById('calendar-days-grid');
+        if (!grid) return;
+
+        grid.innerHTML = '';
+
+        // July 2026 starts on Wednesday (3 empty placeholders)
+        const offset = 3;
+        const totalDays = 31;
+
+        // Populate empty spaces
+        for (let i = 0; i < offset; i++) {
+          const col = document.createElement('div');
+          col.className = 'col';
+          col.innerHTML = `<button class="calendar-day-btn empty"></button>`;
+          grid.appendChild(col);
+        }
+
+        // Check which days have appointments
+        const bookedDays = {};
+        Object.values(appointmentsData).forEach(app => {
+          if (app.status !== 'Cancelled') {
+            const parts = app.date.split('-');
+            if (parts[0] === '2026' && parts[1] === '07') {
+              const day = parseInt(parts[2]);
+              bookedDays[day] = true;
+            }
+          }
+        });
+
+        // Render days
+        for (let day = 1; day <= totalDays; day++) {
+          const formattedDay = day.toString().padStart(2, '0');
+          const fullDateStr = `2026-07-${formattedDay}`;
+
+          const col = document.createElement('div');
+          col.className = 'col';
+
+          let classes = "calendar-day-btn";
+          if (bookedDays[day]) classes += " has-appointment";
+          if (selectedCalendarDate === fullDateStr) classes += " selected";
+
+          col.innerHTML = `<button class="${classes}" onclick="selectCalendarDate('${fullDateStr}')">${day}</button>`;
+          grid.appendChild(col);
+        }
+
+        // Show / Hide Clear Calendar Date button
+        const resetBtn = document.getElementById('btn-clear-date-filter');
+        if (selectedCalendarDate || document.getElementById('date-filter').value) {
+          resetBtn.classList.remove('d-none');
+        } else {
+          resetBtn.classList.add('d-none');
+        }
+      }
+
+      // Select date filter from calendar click
+      window.selectCalendarDate = function(dateStr) {
+        selectedCalendarDate = dateStr;
+        // Sync to native date input
+        document.getElementById('date-filter').value = dateStr;
+        renderAll();
+      };
+
+      // Reset date filters
+      window.clearDateFilter = function() {
+        selectedCalendarDate = "";
+        document.getElementById('date-filter').value = "";
+        renderAll();
+      };
+
+      // View details handler
+      window.viewAppointment = function(id) {
+        const app = appointmentsData[id];
+        if (!app) return;
+
+        const initials = app.patientName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+        document.getElementById('viewAppInitials').textContent = initials;
+        document.getElementById('viewAppPatientName').textContent = app.patientName;
+        document.getElementById('viewAppId').textContent = app.id;
+        document.getElementById('viewAppDoctor').textContent = app.doctorName;
+        document.getElementById('viewAppType').textContent = app.type;
+        document.getElementById('viewAppDate').textContent = formatDateNice(app.date);
+        document.getElementById('viewAppTime').textContent = app.time;
+        document.getElementById('viewAppNotes').textContent = app.notes || "No extra clinical notes listed.";
+
+        const statusBadge = document.getElementById('viewAppStatusBadge');
+        let statusBadgeClass = "badge-pending";
+        if (app.status === "Confirmed") statusBadgeClass = "badge-ready";
+        if (app.status === "Cancelled") statusBadgeClass = "badge-cancelled";
+        statusBadge.className = `badge-custom ${statusBadgeClass}`;
+        statusBadge.textContent = app.status;
+
+        const viewModal = new bootstrap.Modal(document.getElementById('viewAppointmentModal'));
+        viewModal.show();
+      };
+
+      // Edit dialog popup prefilled
+      window.editAppointment = function(id) {
+        const app = appointmentsData[id];
+        if (!app) return;
+
+        document.getElementById('editAppId').value = app.id;
+        document.getElementById('editPatientName').value = app.patientName;
+        document.getElementById('editDoctor').value = app.doctorName;
+        document.getElementById('editDate').value = app.date;
+        document.getElementById('editTime').value = parseTimeTo24h(app.time);
+        document.getElementById('editType').value = app.type;
+        document.getElementById('editStatus').value = app.status;
+        document.getElementById('editNotes').value = app.notes || "";
+
+        const editModal = new bootstrap.Modal(document.getElementById('editAppointmentModal'));
+        editModal.show();
+      };
+
+      // Direct quick Cancel click action
+      window.cancelAppointment = function(id) {
+        const app = appointmentsData[id];
+        if (!app) return;
+
+        if (confirm(`Are you sure you want to cancel the appointment ${id} for ${app.patientName}?`)) {
+          app.status = "Cancelled";
+          renderAll();
+          showToast("Appointment Cancelled", `Successfully marked appointment with ${app.doctorName} as Cancelled.`);
+        }
+      };
+
+      // Hookups
+      document.addEventListener('DOMContentLoaded', () => {
+        // Render initial data
+        renderAll();
+
+        // Wire up filters
+        document.getElementById('search-filter').addEventListener('keyup', renderAll);
+        document.getElementById('date-filter').addEventListener('change', function(e) {
+          selectedCalendarDate = e.target.value;
+          renderAll();
+        });
+        document.getElementById('status-filter').addEventListener('change', renderAll);
+        document.getElementById('btn-clear-date-filter').addEventListener('click', window.clearDateFilter);
+
+        // Book Appointment form validation & save handler
+        const addForm = document.getElementById('book-appointment-form');
+        addForm.addEventListener('submit', function (e) {
+          e.preventDefault();
+          if (!addForm.checkValidity()) {
+            e.stopPropagation();
+            addForm.classList.add('was-validated');
+            return;
+          }
+
+          const patientName = document.getElementById('addPatientName').value;
+          const doctorName = document.getElementById('addDoctor').value;
+          const date = document.getElementById('addDate').value;
+          const time24 = document.getElementById('addTime').value;
+          const type = document.getElementById('addType').value;
+          const notes = document.getElementById('addNotes').value;
+
+          const newId = "APT-" + (1000 + Object.keys(appointmentsData).length + 1);
+
+          appointmentsData[newId] = {
+            id: newId,
+            patientName: patientName,
+            patientId: "#4" + Math.floor(10000 + Math.random() * 90000),
+            doctorName: doctorName,
+            date: date,
+            time: formatTime12h(time24),
+            type: type,
+            status: "Pending",
+            notes: notes
+          };
+
+          renderAll();
+
+          // Close modal
+          const modalEl = document.getElementById('bookAppointmentModal');
+          bootstrap.Modal.getInstance(modalEl).hide();
+          addForm.reset();
+          addForm.classList.remove('was-validated');
+
+          showToast("Appointment Booked", `Registered ${type} slot for ${patientName} on ${formatDateNice(date)}.`);
+        });
+
+        // Edit Appointment form submit handler
+        const editForm = document.getElementById('edit-appointment-form');
+        editForm.addEventListener('submit', function (e) {
+          e.preventDefault();
+          if (!editForm.checkValidity()) {
+            e.stopPropagation();
+            editForm.classList.add('was-validated');
+            return;
+          }
+
+          const id = document.getElementById('editAppId').value;
+          const patientName = document.getElementById('editPatientName').value;
+          const doctorName = document.getElementById('editDoctor').value;
+          const date = document.getElementById('editDate').value;
+          const time24 = document.getElementById('editTime').value;
+          const type = document.getElementById('editType').value;
+          const status = document.getElementById('editStatus').value;
+          const notes = document.getElementById('editNotes').value;
+
+          if (appointmentsData[id]) {
+            appointmentsData[id].patientName = patientName;
+            appointmentsData[id].doctorName = doctorName;
+            appointmentsData[id].date = date;
+            appointmentsData[id].time = formatTime12h(time24);
+            appointmentsData[id].type = type;
+            appointmentsData[id].status = status;
+            appointmentsData[id].notes = notes;
+          }
+
+          renderAll();
+
+          // Close modal
+          const editModalEl = document.getElementById('editAppointmentModal');
+          bootstrap.Modal.getInstance(editModalEl).hide();
+          editForm.classList.remove('was-validated');
+
+          showToast("Changes Committed", `Appointment records for ${patientName} updated successfully.`);
+        });
+
+        // Handle Edit from View Modal transition
+        document.getElementById('btn-edit-app-from-view').addEventListener('click', function () {
+          const currentId = document.getElementById('viewAppId').textContent;
+          const viewModalEl = document.getElementById('viewAppointmentModal');
+          bootstrap.Modal.getInstance(viewModalEl).hide();
+          
+          setTimeout(() => {
+            editAppointment(currentId);
+          }, 400);
+        });
+      });
+    </script>
+  </body>
+</html>

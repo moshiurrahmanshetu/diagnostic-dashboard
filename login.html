@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MediScan - Practitioner Login</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- AOS CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+    <!-- Custom Style -->
+    <link href="/css/style.css" rel="stylesheet" />
+    <style>
+      /* Center the card and add modern backdrop pattern */
+      body {
+        background-color: var(--bg-primary);
+        overflow-y: auto !important;
+      }
+      .auth-wrapper {
+        position: relative;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 1rem;
+        z-index: 5;
+      }
+      .auth-card {
+        background-color: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 1.25rem;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.04);
+        width: 100%;
+        max-width: 450px;
+        padding: 2.5rem;
+        position: relative;
+        z-index: 2;
+        transition: all 0.3s ease;
+      }
+      [data-theme="dark"] .auth-card {
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      }
+      .theme-toggle-fixed {
+        position: absolute;
+        top: 1.5rem;
+        right: 1.5rem;
+        z-index: 10;
+      }
+      /* Floating elements for abstract medical background vibe */
+      .bg-circle-1 {
+        position: absolute;
+        width: 300px;
+        height: 300px;
+        border-radius: 50%;
+        background-color: var(--accent-light);
+        opacity: 0.4;
+        top: -10%;
+        left: -5%;
+        filter: blur(80px);
+        z-index: 1;
+        pointer-events: none;
+      }
+      .bg-circle-2 {
+        position: absolute;
+        width: 250px;
+        height: 250px;
+        border-radius: 50%;
+        background-color: rgba(59, 130, 246, 0.05); /* blue hint */
+        bottom: -5%;
+        right: -5%;
+        filter: blur(60px);
+        z-index: 1;
+        pointer-events: none;
+      }
+      .form-group-custom {
+        position: relative;
+        margin-bottom: 1.25rem;
+      }
+      .input-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-secondary);
+        transition: color 0.2s ease;
+        z-index: 4;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .form-control-custom-with-icon {
+        padding-left: 2.75rem !important;
+      }
+      .form-control-custom:focus + .input-icon {
+        color: var(--accent-color);
+      }
+      /* Custom eye toggle for password */
+      .eye-toggle-btn {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: var(--text-secondary);
+        cursor: pointer;
+        z-index: 5;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .eye-toggle-btn:hover {
+        color: var(--accent-color);
+      }
+      /* Custom checkbox styling */
+      .custom-checkbox-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .custom-checkbox {
+        width: 1.15rem;
+        height: 1.15rem;
+        border: 1.5px solid var(--border-color);
+        border-radius: 0.25rem;
+        outline: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        accent-color: var(--accent-color);
+      }
+      /* Toast styling */
+      .custom-toast {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        z-index: 1060;
+        background-color: var(--bg-card);
+        border: 1px solid var(--border-color);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        border-radius: 12px;
+        min-width: 320px;
+        display: none;
+        animation: slideUp 0.3s ease-out;
+      }
+      @keyframes slideUp {
+        from { transform: translateY(100px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+      }
+    </style>
+  </head>
+  <body>
+
+    <!-- Theme Toggler -->
+    <div class="theme-toggle-fixed">
+      <div class="theme-switch-container shadow-sm">
+        <button id="btn-theme-light" class="theme-switch-btn active">
+          <i class="bi bi-sun-fill"></i> Day
+        </button>
+        <button id="btn-theme-dark" class="theme-switch-btn">
+          <i class="bi bi-moon-fill"></i> Night
+        </button>
+      </div>
+    </div>
+
+    <!-- Decorative backgrounds -->
+    <div class="bg-circle-1"></div>
+    <div class="bg-circle-2"></div>
+
+    <!-- Auth layout wrapper -->
+    <div class="auth-wrapper">
+      <div class="auth-card" data-aos="fade-up">
+        
+        <!-- Hospital/Dashboard Logo branding -->
+        <div class="text-center mb-4 pb-2">
+          <div class="d-inline-flex align-items-center justify-content-center bg-accent-light text-accent rounded-circle mb-3" style="width: 3.5rem; height: 3.5rem; color: var(--accent-color);">
+            <i class="bi bi-activity fs-2"></i>
+          </div>
+          <h2 class="fw-bold h4 mb-1 text-primary">MediScan</h2>
+          <p class="text-secondary small mb-0">Diagnostic & Pathology Laboratory Portal</p>
+        </div>
+
+        <h4 class="fw-bold h5 text-center mb-3">Practitioner Login</h4>
+        <p class="text-secondary text-xs text-center mb-4">Provide your credentials to access clinical dashboards and patient logs.</p>
+
+        <!-- Form login -->
+        <form id="form-login" class="needs-validation" novalidate>
+          
+          <!-- Email Input -->
+          <div class="form-group-custom">
+            <label for="input-email" class="form-label form-label-custom">Email Address</label>
+            <div class="position-relative">
+              <input 
+                type="email" 
+                id="input-email" 
+                class="form-control form-control-custom form-control-custom-with-icon" 
+                placeholder="doctor@mediscan.com" 
+                required 
+              />
+              <span class="input-icon"><i class="bi bi-envelope"></i></span>
+            </div>
+            <div class="invalid-feedback text-xs mt-1">Please provide a valid pathology email address.</div>
+          </div>
+
+          <!-- Password Input -->
+          <div class="form-group-custom">
+            <label for="input-password" class="form-label form-label-custom">Secure Password</label>
+            <div class="position-relative">
+              <input 
+                type="password" 
+                id="input-password" 
+                class="form-control form-control-custom form-control-custom-with-icon" 
+                placeholder="••••••••" 
+                required 
+              />
+              <span class="input-icon"><i class="bi bi-lock"></i></span>
+              <button type="button" class="eye-toggle-btn" onclick="togglePassword('input-password', this)">
+                <i class="bi bi-eye"></i>
+              </button>
+            </div>
+            <div class="invalid-feedback text-xs mt-1">Secure credentials must not be blank.</div>
+          </div>
+
+          <!-- Extra options: Remember Me & Forgot Password link -->
+          <div class="d-flex align-items-center justify-content-between text-xs mb-4">
+            <label class="custom-checkbox-wrapper text-secondary cursor-pointer">
+              <input type="checkbox" id="checkbox-remember" class="custom-checkbox" />
+              <span>Remember me</span>
+            </label>
+            <a href="forgot-password.html" class="text-accent text-decoration-none fw-medium" style="color: var(--accent-color);">Forgot Password?</a>
+          </div>
+
+          <!-- Login button -->
+          <button type="submit" class="btn btn-accent w-100 py-2.5 mb-3 d-flex align-items-center justify-content-center gap-2">
+            <i class="bi bi-box-arrow-in-right"></i>
+            <span>Log In to Dashboard</span>
+          </button>
+
+          <!-- Signup redirect links -->
+          <p class="text-center text-secondary text-xs mb-0">
+            First time in this portal? 
+            <a href="signup.html" class="text-accent text-decoration-none fw-semibold" style="color: var(--accent-color);">Create Practitioner Account</a>
+          </p>
+
+        </form>
+
+      </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast-notify" class="custom-toast p-3">
+      <div class="d-flex align-items-center gap-3">
+        <div id="toast-success-icon" class="bg-success text-white rounded-circle d-inline-flex p-2">
+          <i class="bi bi-check-lg"></i>
+        </div>
+        <div class="flex-grow-1">
+          <strong class="text-primary d-block small" id="toast-title">Success</strong>
+          <span class="text-xs text-muted" id="toast-message">Configuration saved successfully.</span>
+        </div>
+        <button type="button" class="btn-close text-xs" onclick="hideToast()" style="background: none; border: none; font-size: 1.2rem; line-height: 1;"><i class="bi bi-x"></i></button>
+      </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- AOS JS -->
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+    <!-- Custom JS -->
+    <script type="module" src="/js/main.js"></script>
+
+    <!-- Page logical Controller -->
+    <script>
+      // Password Eye Toggle function
+      function togglePassword(inputId, btn) {
+        const input = document.getElementById(inputId);
+        if (!input) return;
+        const isPass = input.type === "password";
+        input.type = isPass ? "text" : "password";
+        
+        const icon = btn.querySelector('i');
+        if (icon) {
+          icon.className = isPass ? 'bi bi-eye-slash' : 'bi bi-eye';
+        }
+      }
+
+      // Show/Hide toast system
+      window.showToast = function(title, message, isSuccess = true) {
+        const titleEl = document.getElementById('toast-title');
+        const messageEl = document.getElementById('toast-message');
+        const iconEl = document.getElementById('toast-success-icon');
+
+        if (titleEl) titleEl.textContent = title;
+        if (messageEl) messageEl.textContent = message;
+
+        if (iconEl) {
+          if (isSuccess) {
+            iconEl.className = "bg-success text-white rounded-circle d-inline-flex p-2";
+            iconEl.innerHTML = '<i class="bi bi-check-lg"></i>';
+          } else {
+            iconEl.className = "bg-danger text-white rounded-circle d-inline-flex p-2";
+            iconEl.innerHTML = '<i class="bi bi-exclamation-triangle"></i>';
+          }
+        }
+
+        const toast = document.getElementById('toast-notify');
+        if (toast) {
+          toast.style.display = 'block';
+          setTimeout(() => {
+            hideToast();
+          }, 3500);
+        }
+      };
+
+      window.hideToast = function() {
+        const toast = document.getElementById('toast-notify');
+        if (toast) toast.style.display = 'none';
+      };
+
+      document.addEventListener('DOMContentLoaded', () => {
+        // Pre-populate credentials if user just registered
+        const signupEmail = localStorage.getItem('user_profile_email');
+        if (signupEmail) {
+          const emailInput = document.getElementById('input-email');
+          if (emailInput) {
+            emailInput.value = signupEmail;
+            
+            // Show welcoming alert if they just came from registration
+            const registeredJustNow = sessionStorage.getItem('just_registered');
+            if (registeredJustNow) {
+              sessionStorage.removeItem('just_registered');
+              showToast("Registration Success", "Account ready. Please login with your registered credentials.");
+            }
+          }
+        }
+
+        // Form Submission validation and redirection
+        const loginForm = document.getElementById('form-login');
+        if (loginForm) {
+          loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            if (!loginForm.checkValidity()) {
+              e.stopPropagation();
+              loginForm.classList.add('was-validated');
+              return;
+            }
+
+            const enteredEmail = document.getElementById('input-email').value;
+            const rememberMe = document.getElementById('checkbox-remember').checked;
+
+            // Save session credentials
+            localStorage.setItem('user_logged_in', 'true');
+            if (rememberMe) {
+              localStorage.setItem('saved_login_email', enteredEmail);
+            } else {
+              localStorage.removeItem('saved_login_email');
+            }
+
+            // Sync user profile values to match entered email if custom profile doesn't exist
+            const currentSavedEmail = localStorage.getItem('user_profile_email');
+            if (!currentSavedEmail || currentSavedEmail !== enteredEmail) {
+              // If logged in with a fresh email, set some default profile parameters around it
+              localStorage.setItem('user_profile_email', enteredEmail);
+              
+              // Extract a clean display name from email
+              const nameParts = enteredEmail.split('@')[0].replace(/[^a-zA-Z]/g, ' ');
+              const formattedName = nameParts.split(' ')
+                .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+                .join(' ') || 'Sarah Jenkins';
+              
+              localStorage.setItem('user_profile_name', 'Dr. ' + formattedName);
+              localStorage.setItem('user_profile_role', 'MD, Pathology Specialist');
+              localStorage.setItem('user_profile_phone', '+1 (555) 482-9102');
+              localStorage.removeItem('user_profile_image'); // reset image for new user
+            }
+
+            // Update user profile representation
+            if (typeof window.loadUserProfile === 'function') {
+              window.loadUserProfile();
+            }
+
+            showToast("Login Authorized", "Clinical signature verified. Transferring to dashboard...");
+            
+            // Clean redirection to landing dashboard
+            setTimeout(() => {
+              window.location.href = "index.html";
+            }, 1500);
+          });
+        }
+      });
+    </script>
+  </body>
+</html>
