@@ -28,6 +28,7 @@
   --border-color: #222b40; /* custom slate border */
   --text-primary: #f1f5f9; /* slate-100 */
   --text-secondary: #94a3b8; /* slate-400 */
+  --text-muted: rgb(119 123 129 / 75%) !important;
   --accent-color: #2dd4bf; /* teal-400 */
   --accent-light: #0d2c29; /* deep teal background tint */
   --accent-hover: #14b8a6; /* teal-500 */
@@ -848,4 +849,7 @@ body.sidebar-collapsed .sidebar-link:hover::after {
 /* Day/Night visual transitions */
 .transition-smooth {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.text-muted{
+  color: var(--text-muted) !important;
 }
